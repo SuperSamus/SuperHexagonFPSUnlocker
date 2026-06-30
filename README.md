@@ -10,7 +10,7 @@ Install Python 3.10+ and `uv`, then run from this folder:
 uv run superhexagon-fps-unlocker
 ```
 
-Choose to patch at 120 FPS, 240 FPS, 480 FPS, or a custom FPS value!
+Choose to patch at `120 FPS`, `240 FPS`, `480 FPS`, or a custom FPS value!
 
 ## Commands
 
