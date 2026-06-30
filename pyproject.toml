@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "SuperHexagonFPSUnlocker"
+version = "0.1.0"
+description = "Binary patcher that keeps Super Hexagon simulation at 60 Hz while rendering at 60, 120, or 240 Hz."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [
+  { name = "tarkodev" }
+]
+keywords = ["super-hexagon", "fps", "unlocker", "patcher", "steam"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: End Users/Desktop",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: Microsoft :: Windows",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Games/Entertainment"
+]
+
+[project.urls]
+Homepage = "https://github.com/tarkodev/SuperHexagonFPSUnlocker"
+Repository = "https://github.com/tarkodev/SuperHexagonFPSUnlocker"
+Issues = "https://github.com/tarkodev/SuperHexagonFPSUnlocker/issues"
+
+[project.scripts]
+superhexagon-fps-unlocker = "superhexagon_fps_unlocker:main"
+
+[tool.setuptools]
+py-modules = ["superhexagon_fps_unlocker"]
