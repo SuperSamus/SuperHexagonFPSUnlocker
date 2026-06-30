@@ -12,7 +12,7 @@ license = { file = "LICENSE" }
 authors = [
   { name = "Tarkod" }
 ]
-keywords = ["super-hexagon", "fps", "unlocker", "patcher", "steam"]
+keywords = ["superhexagon", "fps", "unlocker", "steam"]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Environment :: Console",
