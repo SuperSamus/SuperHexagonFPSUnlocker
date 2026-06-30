@@ -178,25 +178,45 @@ def run_diagnose(
     return 0
 
 
-def print_interactive_menu(detection: Detection) -> None:
-    status = getattr(detection.state, "status", "unknown")
-    refresh_hz = getattr(detection.state, "refresh_hz", None)
+def interactive_build_name(backend: Backend) -> str:
+    if backend.key == "neo":
+        return "Neo"
+    if backend.key == "pre-neo":
+        return "Pre-Neo"
+    return backend.label
 
+
+def interactive_status_text(state: object) -> str:
+    status = getattr(state, "status", "unknown")
+    refresh_hz = getattr(state, "refresh_hz", None)
+
+    if status == "patched" and refresh_hz is not None:
+        return f"Patched at {refresh_hz} Hz"
+    if status == "diagnostic" and refresh_hz is not None:
+        return f"Diagnostic patch at {refresh_hz} Hz"
+    if status == "original":
+        return "Original"
+    if isinstance(status, str) and status.startswith("legacy-"):
+        return f"Legacy patch detected ({status.removeprefix('legacy-').replace('-', ' ')})"
+    if isinstance(status, str):
+        return status.replace("-", " ").capitalize()
+    return "Unknown"
+
+
+def print_interactive_menu(detection: Detection) -> None:
     print("SuperHexagonFPSUnlocker")
     print()
     print(f"Executable: {detection.path}")
-    print(f"Detected build: {detection.backend.label}")
-    print(f"State: {status}")
-    if refresh_hz is not None:
-        print(f"Render refresh: {refresh_hz} Hz")
+    print(f"Build: {interactive_build_name(detection.backend)}")
+    print(f"Status: {interactive_status_text(detection.state)}")
     print()
-    print("1. Patch 120 Hz")
-    print("2. Patch 240 Hz")
-    print("3. Patch 480 Hz")
-    print("4. Patch custom Hz")
-    print("5. Restore original")
-    print("6. Status")
-    print("0. Quit")
+    print("[1] Patch at 120 Hz")
+    print("[2] Patch at 240 Hz")
+    print("[3] Patch at 480 Hz")
+    print("[4] Patch at custom Hz")
+    print("[5] Restore original executable")
+    print("[6] Show status")
+    print("[0] Quit")
     print()
 
 
@@ -235,7 +255,7 @@ def run_interactive_menu(detection: Detection) -> int:
 
     try:
         while True:
-            choice = input("Choose an option: ").strip().lower()
+            choice = input("Select an option: ").strip().lower()
             if choice in {"0", "q", "quit", "exit"}:
                 return 0
             if choice in {"4", "custom", "c"}:
