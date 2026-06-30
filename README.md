@@ -23,14 +23,6 @@ uv run superhexagon-fps-unlocker status
 
 Custom values must be multiples of `60` and at least `120`.
 
-## Game Not Found
-
-Pass the Super Hexagon install folder manually:
-
-```text
-uv run superhexagon-fps-unlocker --path "C:\Program Files (x86)\Steam\steamapps\common\Super Hexagon"
-```
-
 ## Notes
 
 Close the game before patching or restoring.
