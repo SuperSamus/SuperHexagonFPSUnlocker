@@ -1,6 +1,9 @@
 # SuperHexagonFPSUnlocker
 
-Unified binary patcher for the Windows Steam build of Super Hexagon.
+Unified binary patcher for the Windows Steam executable of Super Hexagon.
+
+The patcher itself runs on Windows and Linux/Steam Deck. On Linux, it patches
+the Windows executable used by Steam Play/Proton.
 
 It supports both known Windows Steam executable families:
 
@@ -16,23 +19,34 @@ assets, or patched executables.
 
 ## Quick Start
 
-Install Python 3.10 or newer, then run from this repository:
+Install Python 3.10 or newer.
+
+Recommended from this repository with `uv`:
 
 ```text
-Double-click SuperHexagonFPSUnlocker.bat and choose a patch/restore option.
+uv run superhexagon-fps-unlocker
 ```
 
-Or use commands:
+That opens the interactive menu:
 
-```powershell
-.\SuperHexagonFPSUnlocker.bat status
-.\SuperHexagonFPSUnlocker.bat patch --hz 240
+```text
+120, 240, 480, custom, restore, status
 ```
+
+Classic Python install from this repository:
+
+```text
+python -m pip install .
+superhexagon-fps-unlocker
+```
+
+The examples below use `uv run`. If the project is installed with pip, remove
+the `uv run` prefix and call `superhexagon-fps-unlocker` directly.
 
 If Steam auto-detection does not find the install:
 
-```powershell
-.\SuperHexagonFPSUnlocker.bat --path "C:\Program Files (x86)\Steam\steamapps\common\Super Hexagon" patch --hz 240
+```text
+uv run superhexagon-fps-unlocker --path "C:\Program Files (x86)\Steam\steamapps\common\Super Hexagon" patch --hz 240
 ```
 
 Default menu choices:
@@ -46,28 +60,28 @@ least `120`.
 
 `60 Hz` is handled through restore:
 
-```powershell
-.\SuperHexagonFPSUnlocker.bat restore
+```text
+uv run superhexagon-fps-unlocker restore
 ```
 
 ## Commands
 
-Double-clicking `SuperHexagonFPSUnlocker.bat` opens an interactive menu:
+Running without a subcommand opens the interactive menu:
 
 ```text
-120, 240, 480, custom, restore, status
+uv run superhexagon-fps-unlocker
 ```
 
-The same launcher also accepts command-line arguments:
+The same entry point also accepts command-line arguments:
 
-```powershell
-.\SuperHexagonFPSUnlocker.bat status
-.\SuperHexagonFPSUnlocker.bat patch --hz 120
-.\SuperHexagonFPSUnlocker.bat patch --hz 240
-.\SuperHexagonFPSUnlocker.bat patch --hz 480
-.\SuperHexagonFPSUnlocker.bat patch --hz 960
-.\SuperHexagonFPSUnlocker.bat diagnose --hz 240 --seconds 5 --warmup 2
-.\SuperHexagonFPSUnlocker.bat restore
+```text
+uv run superhexagon-fps-unlocker status
+uv run superhexagon-fps-unlocker patch --hz 120
+uv run superhexagon-fps-unlocker patch --hz 240
+uv run superhexagon-fps-unlocker patch --hz 480
+uv run superhexagon-fps-unlocker patch --hz 960
+uv run superhexagon-fps-unlocker diagnose --hz 240 --seconds 5 --warmup 2
+uv run superhexagon-fps-unlocker restore
 ```
 
 The patcher writes one stable backup next to the executable before changing it:
@@ -124,6 +138,6 @@ byte signatures match.
 
 Run a basic syntax check:
 
-```powershell
-Get-ChildItem -Recurse -Filter *.py | ForEach-Object { python -m py_compile $_.FullName }
+```text
+uv run python -m compileall -q src
 ```

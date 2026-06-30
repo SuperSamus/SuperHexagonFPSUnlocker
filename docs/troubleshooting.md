@@ -4,8 +4,8 @@
 
 Run the diagnostic command:
 
-```powershell
-.\SuperHexagonFPSUnlocker.bat diagnose --hz 240
+```text
+uv run superhexagon-fps-unlocker diagnose --hz 240
 ```
 
 A healthy 240 Hz result should be close to:
@@ -32,14 +32,14 @@ That usually means an older speedup patch is still installed or the executable w
 
 Run:
 
-```powershell
-.\SuperHexagonFPSUnlocker.bat status
+```text
+uv run superhexagon-fps-unlocker status
 ```
 
 Then apply the current patch again:
 
-```powershell
-.\SuperHexagonFPSUnlocker.bat patch --hz 240
+```text
+uv run superhexagon-fps-unlocker patch --hz 240
 ```
 
 The current patch keeps the simulation cadence at the original rate. Only render
@@ -52,7 +52,7 @@ This patcher is signature-based and targets a known Windows Steam build. If Stea
 Recommended recovery:
 
 1. In Steam, verify the integrity of the game files.
-2. Run `.\SuperHexagonFPSUnlocker.bat status`.
+2. Run `uv run superhexagon-fps-unlocker status`.
 3. If the file is still unsupported, open an issue with the executable size, SHA-256, and command output.
 
 Use `--force` only if you have confirmed the executable is layout-compatible with the supported build.
@@ -61,8 +61,8 @@ Use `--force` only if you have confirmed the executable is layout-compatible wit
 
 Use:
 
-```powershell
-.\SuperHexagonFPSUnlocker.bat restore
+```text
+uv run superhexagon-fps-unlocker restore
 ```
 
 Or restore the file through Steam's integrity check.

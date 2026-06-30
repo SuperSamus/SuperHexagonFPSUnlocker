@@ -122,11 +122,153 @@ def validate_patch_refresh_hz(refresh_hz: int) -> None:
         )
 
 
+def run_status(detection: Detection) -> int:
+    print_detection(detection)
+    return 0 if getattr(detection.state, "status", "") != "unsupported" else 2
+
+
+def run_patch(detection: Detection, refresh_hz: int, force: bool = False, backup: bool = True) -> int:
+    validate_patch_refresh_hz(refresh_hz)
+    state = detection.backend.module.patch_file(
+        detection.path,
+        refresh_hz=refresh_hz,
+        force=force,
+        backup=backup,
+    )
+    print(f"Executable: {detection.path}")
+    print(f"Detected build: {detection.backend.label}")
+    print(detection.backend.module.format_state(state))
+    print("High refresh patch applied. You can launch the game from Steam.")
+    return 0
+
+
+def run_restore(detection: Detection) -> int:
+    state = detection.backend.module.unpatch_file(detection.path)
+    print(f"Executable: {detection.path}")
+    print(f"Detected build: {detection.backend.label}")
+    print(detection.backend.module.format_state(state))
+    if getattr(state, "status", "") == "original":
+        print("Patch removed. Steam will launch the original executable layout.")
+    return 0
+
+
+def run_diagnose(
+    detection: Detection,
+    refresh_hz: int,
+    duration_seconds: float,
+    warmup_seconds: float,
+    force: bool = False,
+) -> int:
+    validate_patch_refresh_hz(refresh_hz)
+    if duration_seconds <= 0:
+        raise CliError("--seconds must be greater than zero")
+    if warmup_seconds < 0:
+        raise CliError("--warmup must not be negative")
+    result = detection.backend.module.diagnose_file(
+        detection.path,
+        refresh_hz=refresh_hz,
+        duration_seconds=duration_seconds,
+        warmup_seconds=warmup_seconds,
+        force=force,
+    )
+    print(f"Executable: {detection.path}")
+    print(f"Detected build: {detection.backend.label}")
+    print(detection.backend.module.format_diagnostic_result(result))
+    print("Executable restored to its pre-diagnostic bytes.")
+    return 0
+
+
+def print_interactive_menu(detection: Detection) -> None:
+    status = getattr(detection.state, "status", "unknown")
+    refresh_hz = getattr(detection.state, "refresh_hz", None)
+
+    print("SuperHexagonFPSUnlocker")
+    print()
+    print(f"Executable: {detection.path}")
+    print(f"Detected build: {detection.backend.label}")
+    print(f"State: {status}")
+    if refresh_hz is not None:
+        print(f"Render refresh: {refresh_hz} Hz")
+    print()
+    print("1. Patch 120 Hz")
+    print("2. Patch 240 Hz")
+    print("3. Patch 480 Hz")
+    print("4. Patch custom Hz")
+    print("5. Restore original")
+    print("6. Status")
+    print("0. Quit")
+    print()
+
+
+def prompt_custom_refresh_hz() -> int | None:
+    while True:
+        raw_value = input(f"Enter custom Hz (multiple of {REFRESH_HZ_STEP}, minimum {MIN_PATCH_REFRESH_HZ}): ").strip()
+        if not raw_value:
+            return None
+        try:
+            refresh_hz = int(raw_value)
+        except ValueError:
+            print("Error: refresh must be a whole number")
+            continue
+        try:
+            validate_patch_refresh_hz(refresh_hz)
+        except CliError as exc:
+            print(f"Error: {exc}")
+            continue
+        return refresh_hz
+
+
+def run_interactive_menu(detection: Detection) -> int:
+    print_interactive_menu(detection)
+    actions = {
+        "1": ("patch", 120),
+        "120": ("patch", 120),
+        "2": ("patch", 240),
+        "240": ("patch", 240),
+        "3": ("patch", 480),
+        "480": ("patch", 480),
+        "5": ("restore", None),
+        "restore": ("restore", None),
+        "6": ("status", None),
+        "status": ("status", None),
+    }
+
+    try:
+        while True:
+            choice = input("Choose an option: ").strip().lower()
+            if choice in {"0", "q", "quit", "exit"}:
+                return 0
+            if choice in {"4", "custom", "c"}:
+                refresh_hz = prompt_custom_refresh_hz()
+                if refresh_hz is None:
+                    return 0
+                return run_patch(detection, refresh_hz)
+
+            action = actions.get(choice)
+            if action is None:
+                print("Invalid option. Choose 1, 2, 3, 4, 5, 6, or 0.")
+                continue
+
+            command, refresh_hz = action
+            if command == "patch" and refresh_hz is not None:
+                return run_patch(detection, refresh_hz)
+            if command == "restore":
+                return run_restore(detection)
+            if command == "status":
+                return run_status(detection)
+    except KeyboardInterrupt:
+        print()
+        return 130
+    except EOFError:
+        print()
+        return 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Patch Super Hexagon Neo and pre-Neo builds for high refresh rendering.",
     )
-    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
+    parser.add_argument("--version", action="version", version=f"SuperHexagonFPSUnlocker {__version__}")
     parser.add_argument(
         "--path",
         help="Path to the executable or to the Super Hexagon install folder.",
@@ -194,58 +336,33 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    command = args.command or "status"
+    command = args.command
     path_arg = getattr(args, "path", None)
     forced_build = getattr(args, "build", "auto")
 
     try:
         detection = resolve_detection(path_arg, forced_build)
 
+        if command is None:
+            return run_interactive_menu(detection)
+
         if command == "status":
-            print_detection(detection)
-            return 0 if getattr(detection.state, "status", "") != "unsupported" else 2
+            return run_status(detection)
 
         if command == "patch":
-            validate_patch_refresh_hz(args.refresh_hz)
-            state = detection.backend.module.patch_file(
-                detection.path,
-                refresh_hz=args.refresh_hz,
-                force=args.force,
-                backup=not args.no_backup,
-            )
-            print(f"Executable: {detection.path}")
-            print(f"Detected build: {detection.backend.label}")
-            print(detection.backend.module.format_state(state))
-            print("High refresh patch applied. You can launch the game from Steam.")
-            return 0
+            return run_patch(detection, args.refresh_hz, force=args.force, backup=not args.no_backup)
 
         if command == "restore":
-            state = detection.backend.module.unpatch_file(detection.path)
-            print(f"Executable: {detection.path}")
-            print(f"Detected build: {detection.backend.label}")
-            print(detection.backend.module.format_state(state))
-            if getattr(state, "status", "") == "original":
-                print("Patch removed. Steam will launch the original executable layout.")
-            return 0
+            return run_restore(detection)
 
         if command == "diagnose":
-            validate_patch_refresh_hz(args.refresh_hz)
-            if args.seconds <= 0:
-                raise CliError("--seconds must be greater than zero")
-            if args.warmup < 0:
-                raise CliError("--warmup must not be negative")
-            result = detection.backend.module.diagnose_file(
-                detection.path,
-                refresh_hz=args.refresh_hz,
+            return run_diagnose(
+                detection,
+                args.refresh_hz,
                 duration_seconds=args.seconds,
                 warmup_seconds=args.warmup,
                 force=args.force,
             )
-            print(f"Executable: {detection.path}")
-            print(f"Detected build: {detection.backend.label}")
-            print(detection.backend.module.format_diagnostic_result(result))
-            print("Executable restored to its pre-diagnostic bytes.")
-            return 0
 
         parser.error(f"unknown command: {command}")
         return 2

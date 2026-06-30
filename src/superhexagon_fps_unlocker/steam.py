@@ -20,7 +20,7 @@ def unique_paths(paths: Iterable[Path]) -> list[Path]:
     seen: set[str] = set()
     unique: list[Path] = []
     for path in paths:
-        normalized = str(path.expanduser()).lower()
+        normalized = os.path.normcase(str(path.expanduser()))
         if normalized in seen:
             continue
         seen.add(normalized)
@@ -37,7 +37,7 @@ def parse_steam_libraryfolders(text: str) -> list[Path]:
     # Older Steam VDF format: "1" "D:\\SteamLibrary"
     for match in re.finditer(r'"\d+"\s+"([^"]+)"', text):
         value = match.group(1)
-        if ":" in value or value.startswith("\\\\"):
+        if ":" in value or value.startswith("\\\\") or value.startswith("/"):
             paths.append(Path(decode_vdf_path(value)))
 
     return unique_paths(paths)
@@ -82,10 +82,29 @@ def registry_steam_roots() -> list[Path]:
 
 def default_steam_roots() -> list[Path]:
     candidates: list[Path] = []
-    for env_name in ("ProgramFiles(x86)", "ProgramFiles"):
-        value = os.environ.get(env_name)
-        if value:
-            candidates.append(Path(value) / "Steam")
+    if sys.platform == "win32":
+        for env_name in ("ProgramFiles(x86)", "ProgramFiles"):
+            value = os.environ.get(env_name)
+            if value:
+                candidates.append(Path(value) / "Steam")
+    else:
+        home = Path.home()
+        for env_name in ("STEAM_DIR", "STEAM_HOME"):
+            value = os.environ.get(env_name)
+            if value:
+                candidates.append(Path(value))
+        xdg_data_home = os.environ.get("XDG_DATA_HOME")
+        if xdg_data_home:
+            candidates.append(Path(xdg_data_home) / "Steam")
+        candidates.extend(
+            [
+                home / ".steam" / "steam",
+                home / ".steam" / "root",
+                home / ".local" / "share" / "Steam",
+                home / ".var" / "app" / "com.valvesoftware.Steam" / ".local" / "share" / "Steam",
+                home / "snap" / "steam" / "common" / ".local" / "share" / "Steam",
+            ]
+        )
     return unique_paths(candidates)
 
 
@@ -153,4 +172,3 @@ def find_exe_candidates(path_arg: str | None) -> list[Path]:
 
     candidates = [path for path in local_exe_candidates() + steam_exe_candidates() if path.exists()]
     return unique_paths(path.resolve() for path in candidates)
-
