@@ -42,4 +42,4 @@ The patcher creates one `.bak` backup next to the executable.
 - [Usage](docs/usage.md)
 - [Troubleshooting](docs/troubleshooting.md)
 - [Neo backend](docs/neo.md)
-- [pre-Neo backend](docs/pre-neo.md)
+- [Pre-Neo backend](docs/pre-neo.md)

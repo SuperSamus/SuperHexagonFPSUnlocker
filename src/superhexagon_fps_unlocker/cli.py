@@ -45,7 +45,7 @@ class Detection:
 
 BACKENDS = {
     "neo": Backend("neo", "Neo Steam build", neo_windows),
-    "pre-neo": Backend("pre-neo", "pre-Neo Steam build", pre_neo_windows),
+    "pre-neo": Backend("pre-neo", "Pre-Neo Steam build", pre_neo_windows),
 }
 
 
@@ -266,7 +266,7 @@ def run_interactive_menu(detection: Detection) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Patch Super Hexagon Neo and pre-Neo builds for high refresh rendering.",
+        description="Patch Super Hexagon Neo and Pre-Neo builds for high refresh rendering.",
     )
     parser.add_argument("--version", action="version", version=f"SuperHexagonFPSUnlocker {__version__}")
     parser.add_argument(

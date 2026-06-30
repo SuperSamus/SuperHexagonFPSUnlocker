@@ -67,7 +67,7 @@ name.
 Current patch backends target the Windows Steam executables:
 
 - Neo build: `SuperHexagon.exe`
-- pre-Neo build: `superhexagon.exe`
+- Pre-Neo build: `superhexagon.exe`
 
 The patcher can run from Windows or Linux/Steam Deck. Linux native executable
 support is planned separately.
@@ -81,4 +81,4 @@ The patch keeps gameplay simulation on the original fixed cadence and runs
 rendering at a higher cadence. Visual state is interpolated during draw so the
 game does not simply run faster.
 
-Neo and pre-Neo are different binaries, so they use separate patch backends.
+Neo and Pre-Neo are different binaries, so they use separate patch backends.

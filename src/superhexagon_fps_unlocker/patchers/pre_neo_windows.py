@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Experimental FPS unlocker for the pre-Neo Windows build of Super Hexagon.
+"""Experimental FPS unlocker for the Pre-Neo Windows build of Super Hexagon.
 
-This is intentionally separate from the Neo patcher. The pre-Neo executable is
+This is intentionally separate from the Neo patcher. The Pre-Neo executable is
 an older GLUT/openFrameworks build with a different timing loop.
 """
 
@@ -37,7 +37,7 @@ SUPPORTED_PRE_NEO_SIZE = 2_698_240
 IMAGE_BASE = 0x400000
 
 PATCH_SECTION_NAME = b".shfps\x00"
-# The pre-Neo patch stores transient render-coordinate snapshots in the
+# The Pre-Neo patch stores transient render-coordinate snapshots in the
 # injected section so draw can interpolate visible wall positions.
 PATCH_SECTION_SIZE = 0x4000
 PATCH_SECTION_CHARACTERISTICS = 0xE0000020  # code, execute, read, write
@@ -45,7 +45,7 @@ PATCH_SECTION_CHARACTERISTICS = 0xE0000020  # code, execute, read, write
 PRE_NEO_MAGIC = b"SHPRENEO"
 PRE_NEO_VERSION = 5
 
-# The original pre-Neo openFrameworks loop uses a 16 ms fixed frame interval.
+# The original Pre-Neo openFrameworks loop uses a 16 ms fixed frame interval.
 # Keep that simulation cadence and only lower the render wait interval.
 SIM_INTERVAL_US = 16_000
 
@@ -1046,7 +1046,7 @@ def analyze_image(data: bytes) -> ImageState:
                 len(data),
                 False,
                 refresh_hz=refresh_hz,
-                reason="patch section exists but does not look like this pre-Neo patcher",
+                reason="patch section exists but does not look like this Pre-Neo patcher",
             )
         diagnostics = section_is_diagnostic(data, section)
         payload, labels = build_patch_section(section_va(info, section), refresh_hz, diagnostics=diagnostics)
@@ -1066,7 +1066,7 @@ def analyze_image(data: bytes) -> ImageState:
             len(data),
             False,
             refresh_hz=refresh_hz,
-            reason="patch section or patch sites do not match this pre-Neo patcher",
+            reason="patch section or patch sites do not match this Pre-Neo patcher",
         )
 
     original_sites = [
@@ -1092,7 +1092,7 @@ def analyze_image(data: bytes) -> ImageState:
         digest,
         len(data),
         False,
-        reason="expected pre-Neo patch signatures were not found",
+        reason="expected Pre-Neo patch signatures were not found",
     )
 
 
@@ -1119,7 +1119,7 @@ def patch_image(
     if not state.supported_signatures and not force:
         raise PatchError(
             "unsupported executable hash/signatures. Re-run with --force only if this is "
-            "the matching pre-Neo Windows build and you accept patching by byte signatures."
+            "the matching Pre-Neo Windows build and you accept patching by byte signatures."
         )
 
     with_section, info, section = install_or_update_patch_section(
@@ -1171,7 +1171,7 @@ def original_image_for_backup(data: bytes, force: bool) -> bytes:
         if not state.supported_signatures and not force:
             raise PatchError(
                 "refusing to back up unsupported original executable. Re-run with --force only "
-                "if this is a layout-compatible pre-Neo Windows build."
+                "if this is a layout-compatible Pre-Neo Windows build."
             )
         return data
 
@@ -1449,7 +1449,7 @@ def resolve_exe(path_arg: str | None) -> Path:
         if candidate.exists():
             return candidate
     searched = "\n  ".join(str(candidate) for candidate in candidates)
-    raise PatchError(f"could not find pre-Neo superhexagon.exe. Searched:\n  {searched}")
+    raise PatchError(f"could not find Pre-Neo superhexagon.exe. Searched:\n  {searched}")
 
 
 def format_state(state: ImageState) -> str:
@@ -1480,17 +1480,17 @@ def format_diagnostic_result(result: DiagnosticResult) -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Patch the pre-Neo Windows Super Hexagon build for high refresh rendering.",
+        description="Patch the Pre-Neo Windows Super Hexagon build for high refresh rendering.",
     )
     parser.add_argument(
         "--path",
-        help="Path to superhexagon.exe or to the pre-Neo Super Hexagon folder.",
+        help="Path to superhexagon.exe or to the Pre-Neo Super Hexagon folder.",
     )
 
     subparsers = parser.add_subparsers(dest="command")
     subparsers.add_parser("status", help="Show executable patch status.")
 
-    patch = subparsers.add_parser("patch", help="Apply or update the pre-Neo FPS patch.")
+    patch = subparsers.add_parser("patch", help="Apply or update the Pre-Neo FPS patch.")
     patch.add_argument("--hz", type=int, dest="refresh_hz", default=DEFAULT_REFRESH_HZ)
     patch.add_argument("--force", action="store_true")
     patch.add_argument("--no-backup", action="store_true", help="Do not create or migrate the stable .bak copy.")
