@@ -14,15 +14,17 @@ echo 2. Patch 180 Hz
 echo 3. Patch 240 Hz
 echo 4. Patch 300 Hz
 echo 5. Patch 360 Hz
-echo 6. Restore original
-echo 7. Status
+echo 6. Patch 960 Hz
+echo 7. Restore original
+echo 8. Status
 echo 0. Quit
 echo.
-choice /c 12345670 /n /m "Choose an option: "
+choice /c 123456780 /n /m "Choose an option: "
 
-if errorlevel 8 exit /b 0
-if errorlevel 7 goto status
-if errorlevel 6 goto restore
+if errorlevel 9 exit /b 0
+if errorlevel 8 goto status
+if errorlevel 7 goto restore
+if errorlevel 6 goto patch_960
 if errorlevel 5 goto patch_360
 if errorlevel 4 goto patch_300
 if errorlevel 3 goto patch_240
@@ -47,6 +49,10 @@ goto done
 
 :patch_360
 python -m superhexagon_fps_unlocker patch --hz 360
+goto done
+
+:patch_960
+python -m superhexagon_fps_unlocker patch --hz 960
 goto done
 
 :restore

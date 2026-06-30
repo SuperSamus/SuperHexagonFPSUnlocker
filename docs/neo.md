@@ -15,9 +15,8 @@ from earlier experiments are detected so users can migrate cleanly.
 Supported public patch choices:
 
 ```text
-120, 180, 240, 300, 360
+120, 180, 240, 300, 360, 960
 ```
 
 `120` and `240` are the known stable targets. Higher modes are available for
 testing on high refresh displays.
-

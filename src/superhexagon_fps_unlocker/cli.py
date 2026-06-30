@@ -10,7 +10,7 @@ from . import steam
 from .patchers import neo, pre_neo
 
 
-PATCH_REFRESH_CHOICES = (120, 180, 240, 300, 360)
+PATCH_REFRESH_CHOICES = (120, 180, 240, 300, 360, 960)
 
 GOOD_STATES = {"original", "patched", "diagnostic"}
 NEO_LEGACY_STATES = {
@@ -146,7 +146,7 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         choices=PATCH_REFRESH_CHOICES,
         default=240,
-        help="Render refresh. Choices: 120, 180, 240, 300, 360. Default: 240.",
+        help="Render refresh. Choices: 120, 180, 240, 300, 360, 960. Default: 240.",
     )
     patch.add_argument("--force", action="store_true")
     patch.add_argument("--no-backup", action="store_true")
@@ -170,7 +170,7 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         choices=PATCH_REFRESH_CHOICES,
         default=240,
-        help="Diagnostic render refresh. Choices: 120, 180, 240, 300, 360. Default: 240.",
+        help="Diagnostic render refresh. Choices: 120, 180, 240, 300, 360, 960. Default: 240.",
     )
     diagnose.add_argument("--seconds", type=float, default=5.0)
     diagnose.add_argument("--warmup", type=float, default=2.0)

@@ -16,9 +16,8 @@ after draw so logical game state remains untouched.
 Supported public patch choices:
 
 ```text
-120, 180, 240, 300, 360
+120, 180, 240, 300, 360, 960
 ```
 
 `120` and `240` are the known stable targets. Other multiples of 60 are exposed
 for testing, but should be validated in actual levels.
-
