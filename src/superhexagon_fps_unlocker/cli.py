@@ -262,6 +262,7 @@ def run_interactive_menu(detection: Detection) -> int:
                 refresh_hz = prompt_custom_refresh_hz()
                 if refresh_hz is None:
                     return 0
+                print()
                 return run_patch(detection, refresh_hz)
 
             action = actions.get(choice)
@@ -270,6 +271,7 @@ def run_interactive_menu(detection: Detection) -> int:
                 continue
 
             command, refresh_hz = action
+            print()
             if command == "patch" and refresh_hz is not None:
                 return run_patch(detection, refresh_hz)
             if command == "restore":
