@@ -1,0 +1,84 @@
+# Usage
+
+## Run
+
+Recommended from the repository:
+
+```text
+uv run superhexagon-fps-unlocker
+```
+
+Classic Python install:
+
+```text
+python -m pip install .
+superhexagon-fps-unlocker
+```
+
+If the project is installed with pip, remove the `uv run` prefix from commands.
+
+This repository does not include or redistribute the game, Steam files, DLLs,
+assets, or patched executables.
+
+## Commands
+
+```text
+uv run superhexagon-fps-unlocker status
+uv run superhexagon-fps-unlocker patch --hz 120
+uv run superhexagon-fps-unlocker patch --hz 240
+uv run superhexagon-fps-unlocker patch --hz 480
+uv run superhexagon-fps-unlocker patch --hz 960
+uv run superhexagon-fps-unlocker diagnose --hz 240 --seconds 5 --warmup 2
+uv run superhexagon-fps-unlocker restore
+```
+
+`120`, `240`, and `480` are the default menu choices. Custom values must be
+multiples of `60` and at least `120`.
+
+`60 Hz` is handled by restoring the original executable:
+
+```text
+uv run superhexagon-fps-unlocker restore
+```
+
+## Manual Path
+
+If Steam auto-detection does not find the install:
+
+```text
+uv run superhexagon-fps-unlocker --path "C:\Program Files (x86)\Steam\steamapps\common\Super Hexagon" patch --hz 240
+```
+
+## Backups
+
+The patcher writes one stable backup next to the executable before changing it:
+
+```text
+SuperHexagon.exe.bak
+superhexagon.exe.bak
+```
+
+Existing old `*.bak.<hash-prefix>` backups are left untouched. If a valid
+original backup is found there, the patcher migrates it to the stable `.bak`
+name.
+
+## Current Backends
+
+Current patch backends target the Windows Steam executables:
+
+- Neo build: `SuperHexagon.exe`
+- pre-Neo build: `superhexagon.exe`
+
+The patcher can run from Windows or Linux/Steam Deck. Linux native executable
+support is planned separately.
+
+Unknown builds are refused by default. Use `--force` only when you know the byte
+signatures match.
+
+## How It Works
+
+The patch keeps gameplay simulation on the original fixed cadence and runs
+rendering at a higher cadence. Visual state is interpolated during draw so the
+game does not simply run faster.
+
+Neo and pre-Neo are different binaries, so they use separate patch backends.
