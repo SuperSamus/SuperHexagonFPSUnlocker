@@ -10,8 +10,8 @@ Install Python 3.10+ and `uv`, then run from this folder:
 uv run superhexagon-fps-unlocker
 ```
 
-Choose `120`, `240`, `480`, a custom refresh rate, restore, or status from the
-menu.
+Choose 120, 240, or 480 Hz, enter a custom value, restore the original
+executable, or check the current status from the menu!
 
 ## Commands
 
