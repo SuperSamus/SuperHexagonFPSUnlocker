@@ -102,9 +102,8 @@ byte signatures match.
 
 ## Development
 
-Run basic checks:
+Run a basic syntax check:
 
 ```powershell
 Get-ChildItem -Recurse -Filter *.py | ForEach-Object { python -m py_compile $_.FullName }
-python -m unittest discover -s tests
 ```
