@@ -70,12 +70,16 @@ The same launcher also accepts command-line arguments:
 .\SuperHexagonFPSUnlocker.bat restore
 ```
 
-The patcher writes a backup next to the executable before changing it:
+The patcher writes one stable backup next to the executable before changing it:
 
 ```text
-SuperHexagon.exe.bak.<hash-prefix>
-superhexagon.exe.bak.<hash-prefix>
+SuperHexagon.exe.bak
+superhexagon.exe.bak
 ```
+
+Existing old `*.bak.<hash-prefix>` backups are left untouched. If a valid
+original backup is found there, the patcher migrates it to the stable `.bak`
+name.
 
 Close the game before patching or restoring.
 

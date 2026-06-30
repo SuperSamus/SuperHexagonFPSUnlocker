@@ -157,7 +157,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Render refresh. Must be a multiple of 60 and at least 120. Default: 240.",
     )
     patch.add_argument("--force", action="store_true")
-    patch.add_argument("--no-backup", action="store_true")
+    patch.add_argument(
+        "--no-backup",
+        action="store_true",
+        help="Do not create or migrate the stable .bak copy before patching.",
+    )
     patch.set_defaults(command="patch")
 
     restore = subparsers.add_parser("restore", help="Restore the original executable layout.")

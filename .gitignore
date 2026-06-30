@@ -13,6 +13,6 @@ venv/
 Super Hexagon/
 *.exe
 *.dll
+*.bak
 *.bak.*
 *.tmp
-

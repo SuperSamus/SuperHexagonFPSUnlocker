@@ -1150,8 +1150,8 @@ def unpatch_image(data: bytes) -> tuple[bytes, ImageState, bool]:
     return restored, analyze_image(restored), True
 
 
-def backup_path_for(exe_path: Path, sha256: str) -> Path:
-    return exe_path.with_name(f"{exe_path.name}.bak.{sha256[:8]}")
+def backup_path_for(exe_path: Path) -> Path:
+    return exe_path.with_name(f"{exe_path.name}.bak")
 
 
 def write_image(path: Path, data: bytes) -> None:
@@ -1160,17 +1160,62 @@ def write_image(path: Path, data: bytes) -> None:
     os.replace(tmp_path, path)
 
 
+def backup_is_valid_original(data: bytes, force: bool = False) -> bool:
+    state = analyze_image(data)
+    return state.status == "original" and (state.supported_signatures or force)
+
+
+def original_image_for_backup(data: bytes, force: bool) -> bytes:
+    state = analyze_image(data)
+    if state.status == "original":
+        if not state.supported_signatures and not force:
+            raise PatchError(
+                "refusing to back up unsupported original executable. Re-run with --force only "
+                "if this is a layout-compatible pre-Neo Windows build."
+            )
+        return data
+
+    restored, restored_state, _changed = unpatch_image(data)
+    if restored_state.status != "original" or (not restored_state.supported_signatures and not force):
+        raise PatchError("could not reconstruct a valid original executable for backup")
+    return restored
+
+
+def legacy_backup_paths(exe_path: Path) -> list[Path]:
+    return sorted(exe_path.parent.glob(f"{exe_path.name}.bak.*"))
+
+
+def ensure_backup_file(exe_path: Path, current_data: bytes, force: bool) -> None:
+    backup_path = backup_path_for(exe_path)
+    if backup_path.exists():
+        backup_data = backup_path.read_bytes()
+        if backup_is_valid_original(backup_data, force=force):
+            print(f"Backup already exists: {backup_path}")
+            return
+        raise PatchError(
+            f"backup exists but is not a valid original executable: {backup_path}. "
+            "Move it away or verify the game files through Steam."
+        )
+
+    for legacy_path in legacy_backup_paths(exe_path):
+        try:
+            legacy_data = legacy_path.read_bytes()
+        except OSError:
+            continue
+        if backup_is_valid_original(legacy_data, force=force):
+            shutil.copy2(legacy_path, backup_path)
+            print(f"Backup migrated: {backup_path} (from {legacy_path.name})")
+            return
+
+    write_image(backup_path, original_image_for_backup(current_data, force=force))
+    print(f"Backup written: {backup_path}")
+
+
 def patch_file(exe_path: Path, refresh_hz: int, force: bool, backup: bool) -> ImageState:
     original = exe_path.read_bytes()
+    if backup:
+        ensure_backup_file(exe_path, original, force=force)
     patched, state, changed = patch_image(original, refresh_hz=refresh_hz, force=force)
-    if changed and backup:
-        source_state = analyze_image(original)
-        backup_path = backup_path_for(exe_path, source_state.sha256)
-        if not backup_path.exists():
-            shutil.copy2(exe_path, backup_path)
-            print(f"Backup written: {backup_path}")
-        else:
-            print(f"Backup already exists: {backup_path}")
     if changed:
         write_image(exe_path, patched)
     return state
@@ -1369,6 +1414,18 @@ def diagnose_file(
 
 
 def unpatch_file(exe_path: Path) -> ImageState:
+    backup_path = backup_path_for(exe_path)
+    if backup_path.exists():
+        backup_data = backup_path.read_bytes()
+        if not backup_is_valid_original(backup_data):
+            raise PatchError(
+                f"backup exists but is not a valid original executable: {backup_path}. "
+                "Move it away or verify the game files through Steam."
+            )
+        if exe_path.read_bytes() != backup_data:
+            write_image(exe_path, backup_data)
+        return analyze_image(backup_data)
+
     restored, state, changed = unpatch_image(exe_path.read_bytes())
     if changed:
         write_image(exe_path, restored)
@@ -1436,7 +1493,7 @@ def build_parser() -> argparse.ArgumentParser:
     patch = subparsers.add_parser("patch", help="Apply or update the pre-Neo FPS patch.")
     patch.add_argument("--hz", type=int, dest="refresh_hz", default=DEFAULT_REFRESH_HZ)
     patch.add_argument("--force", action="store_true")
-    patch.add_argument("--no-backup", action="store_true")
+    patch.add_argument("--no-backup", action="store_true", help="Do not create or migrate the stable .bak copy.")
 
     unpatch = subparsers.add_parser("unpatch", help="Restore the original executable layout.")
     unpatch.set_defaults(command="unpatch")
