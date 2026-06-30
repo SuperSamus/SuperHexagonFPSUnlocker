@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
 authors = [
-  { name = "tarkodev" }
+  { name = "Tarkod" }
 ]
 keywords = ["super-hexagon", "fps", "unlocker", "patcher", "steam"]
 classifiers = [
