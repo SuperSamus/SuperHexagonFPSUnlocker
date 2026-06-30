@@ -10,7 +10,9 @@ from . import steam
 from .patchers import neo, pre_neo
 
 
-PATCH_REFRESH_CHOICES = (120, 180, 240, 300, 360, 960)
+PRESET_REFRESH_CHOICES = (120, 240, 480)
+MIN_PATCH_REFRESH_HZ = 120
+REFRESH_HZ_STEP = 60
 
 GOOD_STATES = {"original", "patched", "diagnostic"}
 NEO_LEGACY_STATES = {
@@ -113,6 +115,13 @@ def print_detection(detection: Detection) -> None:
     print(detection.backend.module.format_state(detection.state))
 
 
+def validate_patch_refresh_hz(refresh_hz: int) -> None:
+    if refresh_hz < MIN_PATCH_REFRESH_HZ or refresh_hz % REFRESH_HZ_STEP:
+        raise CliError(
+            f"refresh must be a multiple of {REFRESH_HZ_STEP} greater than or equal to {MIN_PATCH_REFRESH_HZ}"
+        )
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Patch Super Hexagon Neo and pre-Neo builds for high refresh rendering.",
@@ -144,9 +153,8 @@ def build_parser() -> argparse.ArgumentParser:
         "--fps",
         dest="refresh_hz",
         type=int,
-        choices=PATCH_REFRESH_CHOICES,
         default=240,
-        help="Render refresh. Choices: 120, 180, 240, 300, 360, 960. Default: 240.",
+        help="Render refresh. Must be a multiple of 60 and at least 120. Default: 240.",
     )
     patch.add_argument("--force", action="store_true")
     patch.add_argument("--no-backup", action="store_true")
@@ -168,9 +176,8 @@ def build_parser() -> argparse.ArgumentParser:
         "--fps",
         dest="refresh_hz",
         type=int,
-        choices=PATCH_REFRESH_CHOICES,
         default=240,
-        help="Diagnostic render refresh. Choices: 120, 180, 240, 300, 360, 960. Default: 240.",
+        help="Diagnostic render refresh. Must be a multiple of 60 and at least 120. Default: 240.",
     )
     diagnose.add_argument("--seconds", type=float, default=5.0)
     diagnose.add_argument("--warmup", type=float, default=2.0)
@@ -195,6 +202,7 @@ def main(argv: list[str] | None = None) -> int:
             return 0 if getattr(detection.state, "status", "") != "unsupported" else 2
 
         if command == "patch":
+            validate_patch_refresh_hz(args.refresh_hz)
             state = detection.backend.module.patch_file(
                 detection.path,
                 refresh_hz=args.refresh_hz,
@@ -217,6 +225,7 @@ def main(argv: list[str] | None = None) -> int:
             return 0
 
         if command == "diagnose":
+            validate_patch_refresh_hz(args.refresh_hz)
             if args.seconds <= 0:
                 raise CliError("--seconds must be greater than zero")
             if args.warmup < 0:

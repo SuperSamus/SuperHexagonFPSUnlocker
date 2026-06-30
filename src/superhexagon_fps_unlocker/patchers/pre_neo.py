@@ -23,11 +23,12 @@ from typing import Iterable
 
 
 GAME_DIR_NAME = "Super Hexagon"
-EXE_CANDIDATES = ("superhexagon.exe", "SuperHexagon.exe")
+EXE_CANDIDATES = ("superhexagon.exe",)
 
 ORIGINAL_REFRESH_HZ = 60
 DEFAULT_REFRESH_HZ = 240
-ALLOWED_REFRESH_HZ = (60, 120, 180, 240, 300, 360, 960)
+MIN_PATCH_REFRESH_HZ = 120
+REFRESH_HZ_STEP = 60
 
 SUPPORTED_PRE_NEO_SHA256 = (
     "69411cb275202b21c3e0428a5c27704e97663a17723497b61bd7dfeaa1534bdd"
@@ -209,9 +210,19 @@ def slice_at(data: bytes | bytearray, offset: int, size: int) -> bytes:
 
 
 def validate_refresh_hz(refresh_hz: int) -> None:
-    if refresh_hz not in ALLOWED_REFRESH_HZ:
-        allowed = ", ".join(str(value) for value in ALLOWED_REFRESH_HZ)
-        raise PatchError(f"refresh must be one of: {allowed}")
+    if not is_supported_refresh_hz(refresh_hz):
+        raise PatchError(
+            f"refresh must be {ORIGINAL_REFRESH_HZ} or a multiple of "
+            f"{REFRESH_HZ_STEP} greater than or equal to {MIN_PATCH_REFRESH_HZ}"
+        )
+
+
+def is_supported_refresh_hz(refresh_hz: int | None) -> bool:
+    if refresh_hz is None:
+        return False
+    return refresh_hz == ORIGINAL_REFRESH_HZ or (
+        refresh_hz >= MIN_PATCH_REFRESH_HZ and refresh_hz % REFRESH_HZ_STEP == 0
+    )
 
 
 def render_interval_us(refresh_hz: int) -> int:
@@ -312,7 +323,7 @@ def write_patch_sites(data: bytes, sites: Iterable[PatchSite]) -> bytes:
 
 def restore_patch_sites(data: bytes, info: PEInfo, section: Section) -> bytes:
     refresh_hz = section_refresh_hz(data, section)
-    if refresh_hz not in ALLOWED_REFRESH_HZ:
+    if not is_supported_refresh_hz(refresh_hz):
         raise PatchError("patch section has no supported refresh value")
     diagnostics = section_is_diagnostic(data, section)
     _payload, labels = build_patch_section(
@@ -1028,7 +1039,7 @@ def analyze_image(data: bytes) -> ImageState:
     section = patch_section(info)
     if section is not None:
         refresh_hz = section_refresh_hz(data, section)
-        if refresh_hz not in ALLOWED_REFRESH_HZ:
+        if not is_supported_refresh_hz(refresh_hz):
             return ImageState(
                 "conflict",
                 digest,

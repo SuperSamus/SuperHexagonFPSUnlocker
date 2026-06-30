@@ -30,7 +30,8 @@ EXE_NAME = "SuperHexagon.exe"
 
 ORIGINAL_REFRESH_HZ = 60
 DEFAULT_REFRESH_HZ = 240
-ALLOWED_REFRESH_HZ = (60, 120, 180, 240, 300, 360, 960)
+MIN_PATCH_REFRESH_HZ = 120
+REFRESH_HZ_STEP = 60
 
 SUPPORTED_EXE_SHA256 = (
     "72b0c26053c37edd3435def461e9027cd6ffad12032db2fd0b32c256fdbee6b9"
@@ -338,9 +339,19 @@ def restore_legacy_speed_patch(data: bytes | bytearray) -> bytes:
 
 
 def validate_refresh_hz(refresh_hz: int) -> None:
-    if refresh_hz not in ALLOWED_REFRESH_HZ:
-        allowed = ", ".join(str(value) for value in ALLOWED_REFRESH_HZ)
-        raise PatchError(f"refresh must be one of: {allowed}")
+    if not is_supported_refresh_hz(refresh_hz):
+        raise PatchError(
+            f"refresh must be {ORIGINAL_REFRESH_HZ} or a multiple of "
+            f"{REFRESH_HZ_STEP} greater than or equal to {MIN_PATCH_REFRESH_HZ}"
+        )
+
+
+def is_supported_refresh_hz(refresh_hz: int | None) -> bool:
+    if refresh_hz is None:
+        return False
+    return refresh_hz == ORIGINAL_REFRESH_HZ or (
+        refresh_hz >= MIN_PATCH_REFRESH_HZ and refresh_hz % REFRESH_HZ_STEP == 0
+    )
 
 
 def make_init_hook(start_va: int) -> bytes:
@@ -1177,7 +1188,7 @@ def write_patch_sites(
         current_replacement = slice_at(patched, site.offset, len(site.replacement))
         if site.name == "render divisor":
             divisor = current_render_divisor(patched)
-            if current != site.original and divisor not in ALLOWED_REFRESH_HZ:
+            if current != site.original and not is_supported_refresh_hz(divisor):
                 raise PatchError(f"unexpected bytes at {site.name}")
         elif current not in {site.original, site.replacement} and current_replacement != site.replacement:
             raise PatchError(f"unexpected bytes at {site.name}")
@@ -1192,7 +1203,7 @@ def diagnostic_patch_sites_for_image(data: bytes | bytearray) -> list[PatchSite]
         return []
     section = patch_section(info)
     divisor = current_render_divisor(data)
-    if section is None or divisor not in ALLOWED_REFRESH_HZ:
+    if section is None or not is_supported_refresh_hz(divisor):
         return []
     _payload, labels = build_patch_section(
         section_va(info, section),
@@ -1317,7 +1328,7 @@ def analyze_image(data: bytes) -> ImageState:
     section = patch_section(info)
     if section is not None:
         divisor = current_render_divisor(data)
-        if divisor not in ALLOWED_REFRESH_HZ:
+        if not is_supported_refresh_hz(divisor):
             return ImageState(
                 "conflict",
                 digest,
@@ -2057,9 +2068,9 @@ def build_parser() -> argparse.ArgumentParser:
         "--fps",
         dest="refresh_hz",
         type=int,
-        choices=ALLOWED_REFRESH_HZ,
         default=DEFAULT_REFRESH_HZ,
-        help=f"Render refresh. Choices: {', '.join(str(v) for v in ALLOWED_REFRESH_HZ)}. "
+        help=f"Render refresh. Must be {ORIGINAL_REFRESH_HZ} or a multiple of "
+        f"{REFRESH_HZ_STEP} greater than or equal to {MIN_PATCH_REFRESH_HZ}. "
         f"Default: {DEFAULT_REFRESH_HZ}.",
     )
     patch.add_argument(
@@ -2096,9 +2107,9 @@ def build_parser() -> argparse.ArgumentParser:
         "--fps",
         dest="refresh_hz",
         type=int,
-        choices=ALLOWED_REFRESH_HZ,
         default=DEFAULT_REFRESH_HZ,
-        help=f"Diagnostic render refresh. Choices: {', '.join(str(v) for v in ALLOWED_REFRESH_HZ)}. "
+        help=f"Diagnostic render refresh. Must be {ORIGINAL_REFRESH_HZ} or a multiple of "
+        f"{REFRESH_HZ_STEP} greater than or equal to {MIN_PATCH_REFRESH_HZ}. "
         f"Default: {DEFAULT_REFRESH_HZ}.",
     )
     diagnose.add_argument(

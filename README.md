@@ -5,7 +5,7 @@ Unified binary patcher for the Windows Steam build of Super Hexagon.
 It supports both known Windows Steam executable families:
 
 - Neo build: `SuperHexagon.exe`
-- pre-Neo build: `superhexagon.exe` or `SuperHexagon.exe`
+- pre-Neo build: `superhexagon.exe`
 
 The tool auto-detects the installed build, applies the matching backend, and
 patches the executable in place. After patching once, launch the game normally
@@ -35,11 +35,14 @@ If Steam auto-detection does not find the install:
 .\SuperHexagonFPSUnlocker.bat --path "C:\Program Files (x86)\Steam\steamapps\common\Super Hexagon" patch --hz 240
 ```
 
-Available patch refresh choices:
+Default menu choices:
 
 ```text
-120, 180, 240, 300, 360, 960
+120, 240, 480
 ```
+
+Custom command-line values are accepted when they are multiples of `60` and at
+least `120`.
 
 `60 Hz` is handled through restore:
 
@@ -52,7 +55,7 @@ Available patch refresh choices:
 Double-clicking `SuperHexagonFPSUnlocker.bat` opens an interactive menu:
 
 ```text
-120, 180, 240, 300, 360, 960, restore, status
+120, 240, 480, custom, restore, status
 ```
 
 The same launcher also accepts command-line arguments:
@@ -60,10 +63,8 @@ The same launcher also accepts command-line arguments:
 ```powershell
 .\SuperHexagonFPSUnlocker.bat status
 .\SuperHexagonFPSUnlocker.bat patch --hz 120
-.\SuperHexagonFPSUnlocker.bat patch --hz 180
 .\SuperHexagonFPSUnlocker.bat patch --hz 240
-.\SuperHexagonFPSUnlocker.bat patch --hz 300
-.\SuperHexagonFPSUnlocker.bat patch --hz 360
+.\SuperHexagonFPSUnlocker.bat patch --hz 480
 .\SuperHexagonFPSUnlocker.bat patch --hz 960
 .\SuperHexagonFPSUnlocker.bat diagnose --hz 240 --seconds 5 --warmup 2
 .\SuperHexagonFPSUnlocker.bat restore
@@ -111,9 +112,9 @@ byte signatures match.
 - Disable in-game VSync if your monitor or driver still limits rendering.
 - Steam file verification or game updates can restore the original executable.
   Re-run `patch --hz 240` after that.
-- `120` and `240` are the most tested modes. `180`, `300`, `360`, and `960`
-  are exposed because they are multiples of 60, but they should be treated as
-  experimental until they are tested across both build families.
+- `120`, `240`, and `480` are the default menu choices. Any multiple of `60`
+  from `120` upward is accepted as a custom value, but very high values should
+  be treated as experimental until tested on your setup.
 
 ## Development
 

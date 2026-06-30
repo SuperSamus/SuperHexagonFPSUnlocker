@@ -13,11 +13,11 @@ keeps the 16 ms simulation cadence and interpolates final wall draw coordinate
 arrays between simulation ticks. The original values are restored immediately
 after draw so logical game state remains untouched.
 
-Supported public patch choices:
+Default menu choices:
 
 ```text
-120, 180, 240, 300, 360, 960
+120, 240, 480
 ```
 
-`120` and `240` are the known stable targets. Other multiples of 60 are exposed
-for testing, but should be validated in actual levels.
+Any multiple of `60` from `120` upward is accepted from the command line or the
+menu's custom option. Very high modes should be validated in actual levels.

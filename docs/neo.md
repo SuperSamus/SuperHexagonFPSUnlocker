@@ -12,11 +12,12 @@ It keeps simulation timing at the original cadence, raises render pacing, and
 interpolates selected visual fields during draw. Existing legacy patch states
 from earlier experiments are detected so users can migrate cleanly.
 
-Supported public patch choices:
+Default menu choices:
 
 ```text
-120, 180, 240, 300, 360, 960
+120, 240, 480
 ```
 
-`120` and `240` are the known stable targets. Higher modes are available for
-testing on high refresh displays.
+Any multiple of `60` from `120` upward is accepted from the command line or the
+menu's custom option. Very high modes are experimental and depend on the display,
+driver, and system pacing.
