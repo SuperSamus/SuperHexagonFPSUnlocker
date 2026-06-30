@@ -57,6 +57,7 @@ The patcher writes one backup next to the executable before changing it:
 ```text
 SuperHexagon.exe.bak
 superhexagon.exe.bak
+SuperHexagon.bak
 ```
 
 Existing old `*.bak.<hash-prefix>` backups are left untouched. If a valid
@@ -66,18 +67,25 @@ name.
 If the stable `.bak` belongs to a different build, the patcher replaces it with
 an original executable for the currently detected build.
 
+The native Linux backend needs a valid `.bak` to restore because it reuses part
+of the original executable as patch space. `--no-backup` is accepted there only
+when a valid `SuperHexagon.bak` already exists.
+
 ## Current Backends
 
-Current patch backends target the Windows Steam executables:
+Current patch backends target these Steam executables:
 
 - Neo build: `SuperHexagon.exe`
 - Pre-Neo build: `superhexagon.exe`
+- Neo Linux build: `SuperHexagon`
 
-The patcher can run from Windows or Linux/Steam Deck. Linux native executable
-support is planned separately.
+The native Linux backend is signature-based and currently targets the known
+Steam ELF64 build.
 
 Unknown builds are refused by default. Use `--force` only when you know the byte
 signatures match.
+
+Runtime diagnostics are currently implemented for the Windows backends only.
 
 ## How It Works
 

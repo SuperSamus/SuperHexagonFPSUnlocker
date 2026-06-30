@@ -9,7 +9,7 @@ from typing import Iterable
 
 APP_ID = "221640"
 GAME_DIR_NAME = "Super Hexagon"
-EXE_CANDIDATES = ("SuperHexagon.exe", "superhexagon.exe")
+EXE_CANDIDATES = ("SuperHexagon.exe", "superhexagon.exe", "SuperHexagon")
 
 
 def decode_vdf_path(value: str) -> str:

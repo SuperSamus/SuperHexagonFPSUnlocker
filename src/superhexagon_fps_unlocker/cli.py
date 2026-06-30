@@ -7,7 +7,7 @@ from types import ModuleType
 
 from . import __version__
 from . import steam
-from .patchers import neo_windows, pre_neo_windows
+from .patchers import neo_linux, neo_windows, pre_neo_windows
 
 
 PRESET_REFRESH_CHOICES = (120, 240, 360, 480)
@@ -45,6 +45,7 @@ class Detection:
 
 BACKENDS = {
     "neo": Backend("neo", "Neo Steam build", neo_windows),
+    "neo-linux": Backend("neo-linux", "Neo Linux Steam build", neo_linux),
     "pre-neo": Backend("pre-neo", "Pre-Neo Steam build", pre_neo_windows),
 }
 
@@ -286,7 +287,7 @@ def run_interactive_menu(detection: Detection) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Patch Super Hexagon Neo and Pre-Neo builds for higher FPS rendering.",
+        description="Patch supported Super Hexagon Steam builds for higher FPS rendering.",
     )
     parser.add_argument("--version", action="version", version=f"SuperHexagonFPSUnlocker {__version__}")
     parser.add_argument(
@@ -295,7 +296,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--build",
-        choices=("auto", "neo", "pre-neo"),
+        choices=("auto", "neo", "neo-linux", "pre-neo"),
         default="auto",
         help="Force a build backend instead of auto-detecting. Default: auto.",
     )
@@ -304,12 +305,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     status = subparsers.add_parser("status", help="Show patch state.")
     status.add_argument("--path", default=argparse.SUPPRESS)
-    status.add_argument("--build", choices=("auto", "neo", "pre-neo"), default=argparse.SUPPRESS)
+    status.add_argument("--build", choices=("auto", "neo", "neo-linux", "pre-neo"), default=argparse.SUPPRESS)
     status.set_defaults(command="status")
 
     patch = subparsers.add_parser("patch", help="Apply or update the FPS patch.")
     patch.add_argument("--path", default=argparse.SUPPRESS)
-    patch.add_argument("--build", choices=("auto", "neo", "pre-neo"), default=argparse.SUPPRESS)
+    patch.add_argument("--build", choices=("auto", "neo", "neo-linux", "pre-neo"), default=argparse.SUPPRESS)
     patch.add_argument(
         "--fps",
         dest="refresh_hz",
@@ -322,21 +323,21 @@ def build_parser() -> argparse.ArgumentParser:
     patch.add_argument(
         "--no-backup",
         action="store_true",
-        help="Do not create or migrate the stable .bak copy before patching.",
+        help="Do not create or migrate the stable .bak copy before patching. Linux requires an existing valid .bak.",
     )
     patch.set_defaults(command="patch")
 
     restore = subparsers.add_parser("restore", help="Restore the original executable layout.")
     restore.add_argument("--path", default=argparse.SUPPRESS)
-    restore.add_argument("--build", choices=("auto", "neo", "pre-neo"), default=argparse.SUPPRESS)
+    restore.add_argument("--build", choices=("auto", "neo", "neo-linux", "pre-neo"), default=argparse.SUPPRESS)
     restore.set_defaults(command="restore")
 
     diagnose = subparsers.add_parser(
         "diagnose",
-        help="Temporarily instrument update/draw/swap and measure real runtime rates.",
+        help="Windows backends: temporarily instrument update/draw/swap and measure real runtime rates.",
     )
     diagnose.add_argument("--path", default=argparse.SUPPRESS)
-    diagnose.add_argument("--build", choices=("auto", "neo", "pre-neo"), default=argparse.SUPPRESS)
+    diagnose.add_argument("--build", choices=("auto", "neo", "neo-linux", "pre-neo"), default=argparse.SUPPRESS)
     diagnose.add_argument(
         "--fps",
         dest="refresh_hz",
@@ -386,6 +387,6 @@ def main(argv: list[str] | None = None) -> int:
 
         parser.error(f"unknown command: {command}")
         return 2
-    except (CliError, neo_windows.PatchError, pre_neo_windows.PatchError) as exc:
+    except (CliError, neo_windows.PatchError, neo_linux.PatchError, pre_neo_windows.PatchError) as exc:
         print(f"Error: {exc}")
         return 1
