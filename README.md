@@ -16,12 +16,12 @@ menu.
 ## Commands
 
 ```text
-uv run superhexagon-fps-unlocker patch --hz 240
-uv run superhexagon-fps-unlocker restore
 uv run superhexagon-fps-unlocker status
+uv run superhexagon-fps-unlocker restore
+uv run superhexagon-fps-unlocker patch --hz 240
 ```
 
-Custom values must be multiples of `60` and at least `120`.
+Custom Hz values must be multiples of `60` and at least `120`.
 
 ## Notes
 
