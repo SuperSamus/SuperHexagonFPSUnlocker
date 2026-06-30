@@ -1,3 +1,3 @@
 """Unified Super Hexagon FPS unlocker package."""
 
-__version__ = "1.0"
+__version__ = "1.0.0"

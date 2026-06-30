@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "SuperHexagonFPSUnlocker"
-version = "1.0"
+version = "1.0.0"
 description = "Unified Windows Steam Super Hexagon FPS unlocker for Neo and pre-Neo builds."
 readme = "README.md"
 requires-python = ">=3.10"
