@@ -1,24 +1,18 @@
-# Local Steam install; never commit game files.
-/Super Hexagon/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+venv/
+.venv/
 
-# Patched or backed-up executables.
+# Never commit a Steam install, game binaries, or local backups.
+Super Hexagon/
 *.exe
 *.dll
 *.bak.*
 *.tmp
 
-# Python cache/test output.
-__pycache__/
-*.py[cod]
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.venv/
-venv/
-build/
-dist/
-*.egg-info/
-
-# Local scratch space.
-/scratch/
-/tmp/

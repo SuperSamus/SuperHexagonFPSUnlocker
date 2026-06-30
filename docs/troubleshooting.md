@@ -5,7 +5,7 @@
 Run the diagnostic command:
 
 ```powershell
-python .\superhexagon_fps_unlocker.py diagnose --hz 240
+.\SuperHexagonFPSUnlocker.bat diagnose --hz 240
 ```
 
 A healthy 240 Hz result should be close to:
@@ -33,16 +33,17 @@ That usually means an older speedup patch is still installed or the executable w
 Run:
 
 ```powershell
-python .\superhexagon_fps_unlocker.py status
+.\SuperHexagonFPSUnlocker.bat status
 ```
 
 Then apply the current patch again:
 
 ```powershell
-python .\superhexagon_fps_unlocker.py patch --hz 240
+.\SuperHexagonFPSUnlocker.bat patch --hz 240
 ```
 
-The current patch keeps the simulation divisor at 60 Hz. Only render pacing and draw-time interpolation are changed.
+The current patch keeps the simulation cadence at the original rate. Only render
+pacing and draw-time interpolation are changed.
 
 ## The patcher says the executable is unsupported
 
@@ -51,7 +52,7 @@ This patcher is signature-based and targets a known Windows Steam build. If Stea
 Recommended recovery:
 
 1. In Steam, verify the integrity of the game files.
-2. Run `python .\superhexagon_fps_unlocker.py status`.
+2. Run `.\SuperHexagonFPSUnlocker.bat status`.
 3. If the file is still unsupported, open an issue with the executable size, SHA-256, and command output.
 
 Use `--force` only if you have confirmed the executable is layout-compatible with the supported build.
@@ -61,7 +62,7 @@ Use `--force` only if you have confirmed the executable is layout-compatible wit
 Use:
 
 ```powershell
-python .\superhexagon_fps_unlocker.py unpatch
+.\SuperHexagonFPSUnlocker.bat restore
 ```
 
 Or restore the file through Steam's integrity check.

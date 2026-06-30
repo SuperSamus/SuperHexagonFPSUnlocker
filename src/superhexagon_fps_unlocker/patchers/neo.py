@@ -2,7 +2,7 @@
 """Patch the Windows Steam build of Super Hexagon for high refresh rendering.
 
 The patch keeps the fixed update loop at the original 60 Hz, paces rendering at
-60/120/240 Hz, and interpolates selected visual state during draw calls. It
+high refresh rates, and interpolates selected visual state during draw calls. It
 modifies only the user's local executable and does not redistribute game files.
 """
 
@@ -30,7 +30,7 @@ EXE_NAME = "SuperHexagon.exe"
 
 ORIGINAL_REFRESH_HZ = 60
 DEFAULT_REFRESH_HZ = 240
-ALLOWED_REFRESH_HZ = (60, 120, 240)
+ALLOWED_REFRESH_HZ = (60, 120, 180, 240, 300, 360)
 
 SUPPORTED_EXE_SHA256 = (
     "72b0c26053c37edd3435def461e9027cd6ffad12032db2fd0b32c256fdbee6b9"
@@ -2029,7 +2029,7 @@ def format_diagnostic_result(result: DiagnosticResult) -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Patch Super Hexagon rendering to 60/120/240 Hz without speeding up gameplay."
+        description="Patch Super Hexagon rendering to high refresh rates without speeding up gameplay."
     )
     parser.add_argument(
         "--path",

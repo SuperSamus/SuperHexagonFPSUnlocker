@@ -1,65 +1,110 @@
 # SuperHexagonFPSUnlocker
 
-Small binary patcher for the Windows Steam build of Super Hexagon.
+Unified binary patcher for the Windows Steam build of Super Hexagon.
 
-It changes render pacing to 60, 120, or 240 Hz while keeping the game simulation at its original 60 Hz. A small draw hook interpolates selected visual state between fixed updates so gameplay speed, collision timing, and timers keep their original behavior. The patcher only modifies the user's local executable. It does not include or redistribute the game, Steam files, assets, DLLs, or copyrighted data.
+It supports both known Windows Steam executable families:
 
-## Supported Build
+- Neo build: `SuperHexagon.exe`
+- pre-Neo build: `superhexagon.exe` or `SuperHexagon.exe`
 
-Current supported executable:
+The tool auto-detects the installed build, applies the matching backend, and
+patches the executable in place. After patching once, launch the game normally
+from Steam.
 
-- Steam app ID: `221640`
-- File: `SuperHexagon.exe`
-- Size: `1467904` bytes
-- SHA-256: `72b0c26053c37edd3435def461e9027cd6ffad12032db2fd0b32c256fdbee6b9`
+This repository does not include or redistribute the game, Steam files, DLLs,
+assets, or patched executables.
 
-If Steam updates the game, the hash may change. In that case the patcher will refuse to patch by default.
+## Quick Start
 
-## Usage
-
-Install Python 3, then run from this repository:
+Install Python 3.10 or newer, then run from this repository:
 
 ```powershell
-python .\superhexagon_fps_unlocker.py status
-python .\superhexagon_fps_unlocker.py patch --hz 240
-python .\superhexagon_fps_unlocker.py patch --hz 120
-python .\superhexagon_fps_unlocker.py patch --hz 60
-python .\superhexagon_fps_unlocker.py diagnose --hz 240
-python .\superhexagon_fps_unlocker.py unpatch
+.\SuperHexagonFPSUnlocker.bat status
+.\SuperHexagonFPSUnlocker.bat patch --hz 240
 ```
 
-If auto-detection does not find the Steam install:
+If Steam auto-detection does not find the install:
 
 ```powershell
-python .\superhexagon_fps_unlocker.py --path "C:\Program Files (x86)\Steam\steamapps\common\Super Hexagon" patch --hz 240
+.\SuperHexagonFPSUnlocker.bat --path "C:\Program Files (x86)\Steam\steamapps\common\Super Hexagon" patch --hz 240
+```
+
+Available patch refresh choices:
+
+```text
+120, 180, 240, 300, 360
+```
+
+`60 Hz` is handled through restore:
+
+```powershell
+.\SuperHexagonFPSUnlocker.bat restore
+```
+
+## Commands
+
+```powershell
+.\SuperHexagonFPSUnlocker.bat status
+.\SuperHexagonFPSUnlocker.bat patch --hz 120
+.\SuperHexagonFPSUnlocker.bat patch --hz 180
+.\SuperHexagonFPSUnlocker.bat patch --hz 240
+.\SuperHexagonFPSUnlocker.bat patch --hz 300
+.\SuperHexagonFPSUnlocker.bat patch --hz 360
+.\SuperHexagonFPSUnlocker.bat diagnose --hz 240 --seconds 5 --warmup 2
+.\SuperHexagonFPSUnlocker.bat restore
 ```
 
 The patcher writes a backup next to the executable before changing it:
 
 ```text
 SuperHexagon.exe.bak.<hash-prefix>
+superhexagon.exe.bak.<hash-prefix>
 ```
 
-Close the game before patching or unpatching.
+Close the game before patching or restoring.
 
-`--hz 60` restores the original 60 Hz behavior. `unpatch` also restores the original executable layout.
+## How It Works
 
-`diagnose` temporarily instruments the executable, launches the game, counts update/draw/swap calls, then restores the executable bytes it started with. A healthy 240 Hz run should report about 60 update calls per second and about 240 draw/swap calls per second.
+The patch keeps gameplay simulation on the original fixed cadence and runs
+rendering at a higher cadence. Visual state is interpolated during draw so the
+game does not simply run faster.
+
+Neo and pre-Neo are different binaries, so they use separate patch backends.
+The launcher only chooses the backend and forwards the command.
+
+## Supported Builds
+
+Neo:
+
+```text
+SHA-256: 72b0c26053c37edd3435def461e9027cd6ffad12032db2fd0b32c256fdbee6b9
+Size: 1467904 bytes
+```
+
+pre-Neo:
+
+```text
+SHA-256: 69411cb275202b21c3e0428a5c27704e97663a17723497b61bd7dfeaa1534bdd
+Size: 2698240 bytes
+```
+
+Unknown builds are refused by default. Use `--force` only when you know the
+byte signatures match.
 
 ## Notes
 
-- Disable in-game VSync if your monitor or driver is still limiting rendering to a lower refresh rate.
-- This patch targets the Windows Steam executable only.
-- Older versions of this repository either accelerated gameplay, only redrew repeated 60 Hz state, or missed part of the visual interpolation. This patcher detects those legacy states and migrates them before applying the current high-refresh render patch.
-- Use `--force` only when you know the executable is signature-compatible with the supported build.
-- See `docs/troubleshooting.md` if the status reports 120/240 IPS but the game still feels like 60 Hz.
+- Disable in-game VSync if your monitor or driver still limits rendering.
+- Steam file verification or game updates can restore the original executable.
+  Re-run `patch --hz 240` after that.
+- `120` and `240` are the most tested modes. `180`, `300`, and `360` are
+  exposed because they are multiples of 60, but they should be treated as
+  experimental until they are tested across both build families.
 
 ## Development
 
-Run the unit tests without needing the game files:
+Run basic checks:
 
 ```powershell
+Get-ChildItem -Recurse -Filter *.py | ForEach-Object { python -m py_compile $_.FullName }
 python -m unittest discover -s tests
 ```
-
-Do not commit a Steam install or patched executable. `.gitignore` excludes the local `Super Hexagon/` folder and common binary outputs.
