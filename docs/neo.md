@@ -15,7 +15,7 @@ from earlier experiments are detected so users can migrate cleanly.
 Default menu choices:
 
 ```text
-120, 240, 480
+120, 240, 360, 480
 ```
 
 Any multiple of `60` from `120` upward is accepted from the command line or the

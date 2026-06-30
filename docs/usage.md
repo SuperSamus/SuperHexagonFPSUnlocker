@@ -26,13 +26,14 @@ assets, or patched executables.
 uv run superhexagon-fps-unlocker status
 uv run superhexagon-fps-unlocker patch --fps 120
 uv run superhexagon-fps-unlocker patch --fps 240
+uv run superhexagon-fps-unlocker patch --fps 360
 uv run superhexagon-fps-unlocker patch --fps 480
 uv run superhexagon-fps-unlocker patch --fps 960
 uv run superhexagon-fps-unlocker diagnose --fps 240 --seconds 5 --warmup 2
 uv run superhexagon-fps-unlocker restore
 ```
 
-`120`, `240`, and `480` are the default menu choices. Custom values must be
+`120`, `240`, `360`, and `480` are the default menu choices. Custom values must be
 multiples of `60` and at least `120`.
 
 `60 FPS` is handled by restoring the original executable:

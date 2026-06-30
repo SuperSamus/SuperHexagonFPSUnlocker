@@ -10,7 +10,7 @@ from . import steam
 from .patchers import neo_windows, pre_neo_windows
 
 
-PRESET_REFRESH_CHOICES = (120, 240, 480)
+PRESET_REFRESH_CHOICES = (120, 240, 360, 480)
 MIN_PATCH_REFRESH_HZ = 120
 REFRESH_HZ_STEP = 60
 
@@ -210,12 +210,11 @@ def print_interactive_menu(detection: Detection) -> None:
     print(f"Build: {interactive_build_name(detection.backend)}")
     print(f"Status: {interactive_status_text(detection.state)}")
     print()
-    print("[1] Patch at 120 FPS")
-    print("[2] Patch at 240 FPS")
-    print("[3] Patch at 480 FPS")
-    print("[4] Patch at custom FPS")
-    print("[5] Restore original executable")
-    print("[6] Show status")
+    for index, refresh_hz in enumerate(PRESET_REFRESH_CHOICES, start=1):
+        print(f"[{index}] Patch at {refresh_hz} FPS")
+    print("[5] Patch at custom FPS")
+    print("[6] Restore original executable")
+    print("[7] Show status")
     print("[0] Quit")
     print()
 
@@ -241,15 +240,14 @@ def prompt_custom_refresh_hz() -> int | None:
 def run_interactive_menu(detection: Detection) -> int:
     print_interactive_menu(detection)
     actions = {
-        "1": ("patch", 120),
-        "120": ("patch", 120),
-        "2": ("patch", 240),
-        "240": ("patch", 240),
-        "3": ("patch", 480),
-        "480": ("patch", 480),
-        "5": ("restore", None),
+        **{
+            str(index): ("patch", refresh_hz)
+            for index, refresh_hz in enumerate(PRESET_REFRESH_CHOICES, start=1)
+        },
+        **{str(refresh_hz): ("patch", refresh_hz) for refresh_hz in PRESET_REFRESH_CHOICES},
+        "6": ("restore", None),
         "restore": ("restore", None),
-        "6": ("status", None),
+        "7": ("status", None),
         "status": ("status", None),
     }
 
@@ -258,7 +256,7 @@ def run_interactive_menu(detection: Detection) -> int:
             choice = input("Select an option: ").strip().lower()
             if choice in {"0", "q", "quit", "exit"}:
                 return 0
-            if choice in {"4", "custom", "c"}:
+            if choice in {"5", "custom", "c"}:
                 refresh_hz = prompt_custom_refresh_hz()
                 if refresh_hz is None:
                     return 0
@@ -267,7 +265,7 @@ def run_interactive_menu(detection: Detection) -> int:
 
             action = actions.get(choice)
             if action is None:
-                print("Invalid option. Choose 1, 2, 3, 4, 5, 6, or 0.")
+                print("Invalid option. Choose 1, 2, 3, 4, 5, 6, 7, or 0.")
                 continue
 
             command, refresh_hz = action
