@@ -1,14 +1,14 @@
 # Troubleshooting
 
-## The game says 240 IPS but still feels like 60 Hz
+## The game says 240 IPS but still feels like 60 FPS
 
 Run the diagnostic command:
 
 ```text
-uv run superhexagon-fps-unlocker diagnose --hz 240
+uv run superhexagon-fps-unlocker diagnose --fps 240
 ```
 
-A healthy 240 Hz result should be close to:
+A healthy 240 FPS result should be close to:
 
 ```text
 update: 60/s
@@ -39,7 +39,7 @@ uv run superhexagon-fps-unlocker status
 Then apply the current patch again:
 
 ```text
-uv run superhexagon-fps-unlocker patch --hz 240
+uv run superhexagon-fps-unlocker patch --fps 240
 ```
 
 The current patch keeps the simulation cadence at the original rate. Only render

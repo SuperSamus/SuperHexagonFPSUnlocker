@@ -10,7 +10,7 @@ Install Python 3.10+ and `uv`, then run from this folder:
 uv run superhexagon-fps-unlocker
 ```
 
-Choose to patch at `120 Hz`, `240 Hz`, `480 Hz`, or a custom refresh rate,
+Choose to patch at `120 FPS`, `240 FPS`, `480 FPS`, or a custom FPS value,
 restore the original executable, or check the current status from the menu!
 
 ## Commands
@@ -18,10 +18,10 @@ restore the original executable, or check the current status from the menu!
 ```text
 uv run superhexagon-fps-unlocker status
 uv run superhexagon-fps-unlocker restore
-uv run superhexagon-fps-unlocker patch --hz 360
+uv run superhexagon-fps-unlocker patch --fps 360
 ```
 
-Custom Hz values must be multiples of `60` and at least `120`.
+Custom FPS values must be multiples of `60` and at least `120`.
 
 ## Notes
 

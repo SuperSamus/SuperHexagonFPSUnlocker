@@ -212,7 +212,7 @@ def slice_at(data: bytes | bytearray, offset: int, size: int) -> bytes:
 def validate_refresh_hz(refresh_hz: int) -> None:
     if not is_supported_refresh_hz(refresh_hz):
         raise PatchError(
-            f"refresh must be {ORIGINAL_REFRESH_HZ} or a multiple of "
+            f"FPS must be {ORIGINAL_REFRESH_HZ} or a multiple of "
             f"{REFRESH_HZ_STEP} greater than or equal to {MIN_PATCH_REFRESH_HZ}"
         )
 
@@ -1475,7 +1475,7 @@ def format_state(state: ImageState) -> str:
         f"Supported signatures: {'yes' if state.supported_signatures else 'no'}",
     ]
     if state.refresh_hz is not None:
-        lines.append(f"Render refresh: {state.refresh_hz} Hz")
+        lines.append(f"Target FPS: {state.refresh_hz}")
     if state.reason:
         lines.append(f"Reason: {state.reason}")
     return "\n".join(lines)
@@ -1495,7 +1495,7 @@ def format_diagnostic_result(result: DiagnosticResult) -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Patch the Pre-Neo Windows Super Hexagon build for high refresh rendering.",
+        description="Patch the Pre-Neo Windows Super Hexagon build for higher FPS rendering.",
     )
     parser.add_argument(
         "--path",
@@ -1506,7 +1506,7 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers.add_parser("status", help="Show executable patch status.")
 
     patch = subparsers.add_parser("patch", help="Apply or update the Pre-Neo FPS patch.")
-    patch.add_argument("--hz", type=int, dest="refresh_hz", default=DEFAULT_REFRESH_HZ)
+    patch.add_argument("--fps", type=int, dest="refresh_hz", metavar="FPS", default=DEFAULT_REFRESH_HZ)
     patch.add_argument("--force", action="store_true")
     patch.add_argument(
         "--no-backup",
@@ -1518,7 +1518,7 @@ def build_parser() -> argparse.ArgumentParser:
     unpatch.set_defaults(command="unpatch")
 
     diagnose = subparsers.add_parser("diagnose", help="Temporarily instrument and measure the game.")
-    diagnose.add_argument("--hz", type=int, dest="refresh_hz", default=DEFAULT_REFRESH_HZ)
+    diagnose.add_argument("--fps", type=int, dest="refresh_hz", metavar="FPS", default=DEFAULT_REFRESH_HZ)
     diagnose.add_argument("--seconds", type=float, default=5.0)
     diagnose.add_argument("--warmup", type=float, default=1.0)
     diagnose.add_argument("--force", action="store_true")
@@ -1548,7 +1548,7 @@ def main(argv: list[str] | None = None) -> int:
             )
             print(format_state(state))
             if state.status == "patched":
-                print("Pre-Neo high refresh patch applied.")
+                print("Pre-Neo high FPS patch applied.")
             return 0
 
         if command == "unpatch":

@@ -118,7 +118,7 @@ def print_detection(detection: Detection) -> None:
 def validate_patch_refresh_hz(refresh_hz: int) -> None:
     if refresh_hz < MIN_PATCH_REFRESH_HZ or refresh_hz % REFRESH_HZ_STEP:
         raise CliError(
-            f"refresh must be a multiple of {REFRESH_HZ_STEP} greater than or equal to {MIN_PATCH_REFRESH_HZ}"
+            f"FPS must be a multiple of {REFRESH_HZ_STEP} greater than or equal to {MIN_PATCH_REFRESH_HZ}"
         )
 
 
@@ -138,7 +138,7 @@ def run_patch(detection: Detection, refresh_hz: int, force: bool = False, backup
     print(f"Executable: {detection.path}")
     print(f"Detected build: {detection.backend.label}")
     print(detection.backend.module.format_state(state))
-    print("High refresh patch applied. You can launch the game from Steam.")
+    print("High FPS patch applied. You can launch the game from Steam.")
     return 0
 
 
@@ -191,9 +191,9 @@ def interactive_status_text(state: object) -> str:
     refresh_hz = getattr(state, "refresh_hz", None)
 
     if status == "patched" and refresh_hz is not None:
-        return f"Patched at {refresh_hz} Hz"
+        return f"Patched at {refresh_hz} FPS"
     if status == "diagnostic" and refresh_hz is not None:
-        return f"Diagnostic patch at {refresh_hz} Hz"
+        return f"Diagnostic patch at {refresh_hz} FPS"
     if status == "original":
         return "Original"
     if isinstance(status, str) and status.startswith("legacy-"):
@@ -210,10 +210,10 @@ def print_interactive_menu(detection: Detection) -> None:
     print(f"Build: {interactive_build_name(detection.backend)}")
     print(f"Status: {interactive_status_text(detection.state)}")
     print()
-    print("[1] Patch at 120 Hz")
-    print("[2] Patch at 240 Hz")
-    print("[3] Patch at 480 Hz")
-    print("[4] Patch at custom Hz")
+    print("[1] Patch at 120 FPS")
+    print("[2] Patch at 240 FPS")
+    print("[3] Patch at 480 FPS")
+    print("[4] Patch at custom FPS")
     print("[5] Restore original executable")
     print("[6] Show status")
     print("[0] Quit")
@@ -222,13 +222,13 @@ def print_interactive_menu(detection: Detection) -> None:
 
 def prompt_custom_refresh_hz() -> int | None:
     while True:
-        raw_value = input(f"Enter custom Hz (multiple of {REFRESH_HZ_STEP}, minimum {MIN_PATCH_REFRESH_HZ}): ").strip()
+        raw_value = input(f"Enter custom FPS (multiple of {REFRESH_HZ_STEP}, minimum {MIN_PATCH_REFRESH_HZ}): ").strip()
         if not raw_value:
             return None
         try:
             refresh_hz = int(raw_value)
         except ValueError:
-            print("Error: refresh must be a whole number")
+            print("Error: FPS must be a whole number")
             continue
         try:
             validate_patch_refresh_hz(refresh_hz)
@@ -288,7 +288,7 @@ def run_interactive_menu(detection: Detection) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Patch Super Hexagon Neo and Pre-Neo builds for high refresh rendering.",
+        description="Patch Super Hexagon Neo and Pre-Neo builds for higher FPS rendering.",
     )
     parser.add_argument("--version", action="version", version=f"SuperHexagonFPSUnlocker {__version__}")
     parser.add_argument(
@@ -309,16 +309,16 @@ def build_parser() -> argparse.ArgumentParser:
     status.add_argument("--build", choices=("auto", "neo", "pre-neo"), default=argparse.SUPPRESS)
     status.set_defaults(command="status")
 
-    patch = subparsers.add_parser("patch", help="Apply or update the high refresh patch.")
+    patch = subparsers.add_parser("patch", help="Apply or update the FPS patch.")
     patch.add_argument("--path", default=argparse.SUPPRESS)
     patch.add_argument("--build", choices=("auto", "neo", "pre-neo"), default=argparse.SUPPRESS)
     patch.add_argument(
-        "--hz",
         "--fps",
         dest="refresh_hz",
+        metavar="FPS",
         type=int,
         default=240,
-        help="Render refresh. Must be a multiple of 60 and at least 120. Default: 240.",
+        help="Target FPS. Must be a multiple of 60 and at least 120. Default: 240.",
     )
     patch.add_argument("--force", action="store_true")
     patch.add_argument(
@@ -340,12 +340,12 @@ def build_parser() -> argparse.ArgumentParser:
     diagnose.add_argument("--path", default=argparse.SUPPRESS)
     diagnose.add_argument("--build", choices=("auto", "neo", "pre-neo"), default=argparse.SUPPRESS)
     diagnose.add_argument(
-        "--hz",
         "--fps",
         dest="refresh_hz",
+        metavar="FPS",
         type=int,
         default=240,
-        help="Diagnostic render refresh. Must be a multiple of 60 and at least 120. Default: 240.",
+        help="Diagnostic target FPS. Must be a multiple of 60 and at least 120. Default: 240.",
     )
     diagnose.add_argument("--seconds", type=float, default=5.0)
     diagnose.add_argument("--warmup", type=float, default=2.0)

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Patch the Windows Steam build of Super Hexagon for high refresh rendering.
+"""Patch the Windows Steam build of Super Hexagon for higher FPS rendering.
 
-The patch keeps the fixed update loop at the original 60 Hz, paces rendering at
-high refresh rates, and interpolates selected visual state during draw calls. It
+The patch keeps the fixed update loop at the original 60 FPS, paces rendering at
+higher FPS values, and interpolates selected visual state during draw calls. It
 modifies only the user's local executable and does not redistribute game files.
 """
 
@@ -341,7 +341,7 @@ def restore_legacy_speed_patch(data: bytes | bytearray) -> bytes:
 def validate_refresh_hz(refresh_hz: int) -> None:
     if not is_supported_refresh_hz(refresh_hz):
         raise PatchError(
-            f"refresh must be {ORIGINAL_REFRESH_HZ} or a multiple of "
+            f"FPS must be {ORIGINAL_REFRESH_HZ} or a multiple of "
             f"{REFRESH_HZ_STEP} greater than or equal to {MIN_PATCH_REFRESH_HZ}"
         )
 
@@ -1386,7 +1386,7 @@ def analyze_image(data: bytes) -> ImageState:
                 len(data),
                 True,
                 refresh_hz=divisor,
-                reason="old patch leaves a core rotation offset at 60 Hz",
+                reason="old patch leaves a core rotation offset at 60 FPS",
             )
         if all_sites_match(data, no_rotation_sites, replacement=True) and has_legacy_draw_stack_layout(
             no_rotation_section_payload,
@@ -1399,7 +1399,7 @@ def analyze_image(data: bytes) -> ImageState:
                 len(data),
                 True,
                 refresh_hz=divisor,
-                reason="old patch leaves a core rotation offset at 60 Hz and has a stale draw stack layout",
+                reason="old patch leaves a core rotation offset at 60 FPS and has a stale draw stack layout",
             )
 
         no_wall_payload, no_wall_labels = build_patch_section(
@@ -1427,7 +1427,7 @@ def analyze_image(data: bytes) -> ImageState:
                 len(data),
                 True,
                 refresh_hz=divisor,
-                reason="old patch interpolates tick phase and obstacles but leaves wall angle at 60 Hz",
+                reason="old patch interpolates tick phase and obstacles but leaves wall angle at 60 FPS",
             )
         if all_sites_match(data, no_wall_sites, replacement=True) and has_legacy_draw_stack_layout(
             no_wall_section_payload,
@@ -1440,7 +1440,7 @@ def analyze_image(data: bytes) -> ImageState:
                 len(data),
                 True,
                 refresh_hz=divisor,
-                reason="old patch interpolates tick phase and obstacles but leaves wall angle at 60 Hz",
+                reason="old patch interpolates tick phase and obstacles but leaves wall angle at 60 FPS",
             )
 
         old_payload, old_labels = build_patch_section(
@@ -1465,7 +1465,7 @@ def analyze_image(data: bytes) -> ImageState:
                 len(data),
                 True,
                 refresh_hz=divisor,
-                reason="old patch redraws at high refresh but leaves game state at 60 Hz",
+                reason="old patch redraws at higher FPS but leaves game state at 60 FPS",
             )
 
         high_tick_payload, high_tick_labels = build_patch_section(
@@ -1496,7 +1496,7 @@ def analyze_image(data: bytes) -> ImageState:
                 len(data),
                 True,
                 refresh_hz=divisor,
-                reason="old patch runs the simulation above 60 Hz and accelerates gameplay",
+                reason="old patch runs the simulation above 60 FPS and accelerates gameplay",
             )
         return ImageState(
             "conflict",
@@ -2088,7 +2088,7 @@ def format_state(state: ImageState) -> str:
         f"Supported signatures: {'yes' if state.supported_signatures else 'no'}",
     ]
     if state.refresh_hz is not None:
-        lines.append(f"Render refresh: {state.refresh_hz} Hz")
+        lines.append(f"Target FPS: {state.refresh_hz}")
     if state.reason:
         lines.append(f"Reason: {state.reason}")
     return "\n".join(lines)
@@ -2112,7 +2112,7 @@ def format_diagnostic_result(result: DiagnosticResult) -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Patch Super Hexagon rendering to high refresh rates without speeding up gameplay."
+        description="Patch Super Hexagon rendering to higher FPS values without speeding up gameplay."
     )
     parser.add_argument(
         "--path",
@@ -2129,19 +2129,19 @@ def build_parser() -> argparse.ArgumentParser:
     )
     status.set_defaults(command="status")
 
-    patch = subparsers.add_parser("patch", help="Apply or update the high refresh patch.")
+    patch = subparsers.add_parser("patch", help="Apply or update the FPS patch.")
     patch.add_argument(
         "--path",
         default=argparse.SUPPRESS,
         help="Path to SuperHexagon.exe or to the Super Hexagon install folder.",
     )
     patch.add_argument(
-        "--hz",
         "--fps",
         dest="refresh_hz",
+        metavar="FPS",
         type=int,
         default=DEFAULT_REFRESH_HZ,
-        help=f"Render refresh. Must be {ORIGINAL_REFRESH_HZ} or a multiple of "
+        help=f"Target FPS. Must be {ORIGINAL_REFRESH_HZ} or a multiple of "
         f"{REFRESH_HZ_STEP} greater than or equal to {MIN_PATCH_REFRESH_HZ}. "
         f"Default: {DEFAULT_REFRESH_HZ}.",
     )
@@ -2175,12 +2175,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Path to SuperHexagon.exe or to the Super Hexagon install folder.",
     )
     diagnose.add_argument(
-        "--hz",
         "--fps",
         dest="refresh_hz",
+        metavar="FPS",
         type=int,
         default=DEFAULT_REFRESH_HZ,
-        help=f"Diagnostic render refresh. Must be {ORIGINAL_REFRESH_HZ} or a multiple of "
+        help=f"Diagnostic target FPS. Must be {ORIGINAL_REFRESH_HZ} or a multiple of "
         f"{REFRESH_HZ_STEP} greater than or equal to {MIN_PATCH_REFRESH_HZ}. "
         f"Default: {DEFAULT_REFRESH_HZ}.",
     )
@@ -2243,9 +2243,9 @@ def main(argv: list[str] | None = None) -> int:
             )
             print(format_state(state))
             if args.refresh_hz == ORIGINAL_REFRESH_HZ:
-                print("Original 60 Hz behavior restored.")
+                print("Original 60 FPS behavior restored.")
             elif state.status == "patched":
-                print("High refresh patch applied.")
+                print("High FPS patch applied.")
             return 0
 
         if command == "unpatch":
