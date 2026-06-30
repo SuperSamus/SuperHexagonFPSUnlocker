@@ -27,7 +27,7 @@ Custom Hz values must be multiples of `60` and at least `120`.
 
 Close the game before patching or restoring.
 
-The patcher creates one `.bak` backup next to the executable.
+The patcher creates or refreshes one `.bak` backup next to the executable.
 
 ## Docs
 

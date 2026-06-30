@@ -1192,10 +1192,16 @@ def ensure_backup_file(exe_path: Path, current_data: bytes, force: bool) -> None
         if backup_is_valid_original(backup_data, force=force):
             print(f"Backup already exists: {backup_path}")
             return
-        raise PatchError(
-            f"backup exists but is not a valid original executable: {backup_path}. "
-            "Move it away or verify the game files through Steam."
-        )
+        try:
+            replacement_data = original_image_for_backup(current_data, force=force)
+        except PatchError as exc:
+            raise PatchError(
+                f"backup exists but is not valid for this build: {backup_path}. "
+                f"Could not replace it safely: {exc}"
+            ) from exc
+        write_image(backup_path, replacement_data)
+        print(f"Backup replaced: {backup_path}")
+        return
 
     for legacy_path in legacy_backup_paths(exe_path):
         try:
@@ -1417,14 +1423,23 @@ def unpatch_file(exe_path: Path) -> ImageState:
     backup_path = backup_path_for(exe_path)
     if backup_path.exists():
         backup_data = backup_path.read_bytes()
-        if not backup_is_valid_original(backup_data):
+        if backup_is_valid_original(backup_data):
+            if exe_path.read_bytes() != backup_data:
+                write_image(exe_path, backup_data)
+            return analyze_image(backup_data)
+
+        current_data = exe_path.read_bytes()
+        try:
+            restored_data = original_image_for_backup(current_data, force=False)
+        except PatchError as exc:
             raise PatchError(
-                f"backup exists but is not a valid original executable: {backup_path}. "
-                "Move it away or verify the game files through Steam."
-            )
-        if exe_path.read_bytes() != backup_data:
-            write_image(exe_path, backup_data)
-        return analyze_image(backup_data)
+                f"backup exists but is not valid for this build: {backup_path}. "
+                f"Could not restore without it: {exc}"
+            ) from exc
+        if current_data != restored_data:
+            write_image(exe_path, restored_data)
+        write_image(backup_path, restored_data)
+        return analyze_image(restored_data)
 
     restored, state, changed = unpatch_image(exe_path.read_bytes())
     if changed:
@@ -1493,7 +1508,11 @@ def build_parser() -> argparse.ArgumentParser:
     patch = subparsers.add_parser("patch", help="Apply or update the Pre-Neo FPS patch.")
     patch.add_argument("--hz", type=int, dest="refresh_hz", default=DEFAULT_REFRESH_HZ)
     patch.add_argument("--force", action="store_true")
-    patch.add_argument("--no-backup", action="store_true", help="Do not create or migrate the stable .bak copy.")
+    patch.add_argument(
+        "--no-backup",
+        action="store_true",
+        help="Do not create, migrate, or refresh the stable .bak copy.",
+    )
 
     unpatch = subparsers.add_parser("unpatch", help="Restore the original executable layout.")
     unpatch.set_defaults(command="unpatch")

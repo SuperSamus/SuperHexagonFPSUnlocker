@@ -51,7 +51,7 @@ uv run superhexagon-fps-unlocker --path "C:\Program Files (x86)\Steam\steamapps\
 
 ## Backups
 
-The patcher writes one stable backup next to the executable before changing it:
+The patcher writes one backup next to the executable before changing it:
 
 ```text
 SuperHexagon.exe.bak
@@ -61,6 +61,9 @@ superhexagon.exe.bak
 Existing old `*.bak.<hash-prefix>` backups are left untouched. If a valid
 original backup is found there, the patcher migrates it to the stable `.bak`
 name.
+
+If the stable `.bak` belongs to a different build, the patcher replaces it with
+an original executable for the currently detected build.
 
 ## Current Backends
 
