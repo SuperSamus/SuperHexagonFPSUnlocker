@@ -18,6 +18,12 @@ assets, or patched executables.
 
 Install Python 3.10 or newer, then run from this repository:
 
+```text
+Double-click SuperHexagonFPSUnlocker.bat and choose a patch/restore option.
+```
+
+Or use commands:
+
 ```powershell
 .\SuperHexagonFPSUnlocker.bat status
 .\SuperHexagonFPSUnlocker.bat patch --hz 240
@@ -42,6 +48,14 @@ Available patch refresh choices:
 ```
 
 ## Commands
+
+Double-clicking `SuperHexagonFPSUnlocker.bat` opens an interactive menu:
+
+```text
+120, 180, 240, 300, 360, restore, status
+```
+
+The same launcher also accepts command-line arguments:
 
 ```powershell
 .\SuperHexagonFPSUnlocker.bat status
