@@ -7,7 +7,7 @@ from types import ModuleType
 
 from . import __version__
 from . import steam
-from .patchers import neo, pre_neo
+from .patchers import neo_windows, pre_neo_windows
 
 
 PRESET_REFRESH_CHOICES = (120, 240, 480)
@@ -44,8 +44,8 @@ class Detection:
 
 
 BACKENDS = {
-    "neo": Backend("neo", "Neo Steam build", neo),
-    "pre-neo": Backend("pre-neo", "pre-Neo Steam build", pre_neo),
+    "neo": Backend("neo", "Neo Steam build", neo_windows),
+    "pre-neo": Backend("pre-neo", "pre-Neo Steam build", pre_neo_windows),
 }
 
 
@@ -249,6 +249,6 @@ def main(argv: list[str] | None = None) -> int:
 
         parser.error(f"unknown command: {command}")
         return 2
-    except (CliError, neo.PatchError, pre_neo.PatchError) as exc:
+    except (CliError, neo_windows.PatchError, pre_neo_windows.PatchError) as exc:
         print(f"Error: {exc}")
         return 1
