@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "SuperHexagonFPSUnlocker"
-version = "0.2.0"
+version = "1.0"
 description = "Unified Windows Steam Super Hexagon FPS unlocker for Neo and pre-Neo builds."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -14,7 +14,7 @@ authors = [
 ]
 keywords = ["super-hexagon", "fps", "unlocker", "patcher", "steam"]
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 5 - Production/Stable",
   "Environment :: Console",
   "Intended Audience :: End Users/Desktop",
   "License :: OSI Approved :: MIT License",
@@ -37,4 +37,3 @@ superhexagon-fps-unlocker = "superhexagon_fps_unlocker.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
