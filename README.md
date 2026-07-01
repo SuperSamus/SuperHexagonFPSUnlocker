@@ -28,12 +28,12 @@ Close the game before patching or restoring.
 
 The patcher creates or refreshes one `.bak` backup next to the executable.
 
-The native Linux Steam executable is supported for the known Neo ELF64 build.
+The patcher supports the Neo Windows, Neo Linux, and Pre-Neo Windows Steam builds.
 
 ## Docs
 
 - [Usage](docs/usage.md)
 - [Troubleshooting](docs/troubleshooting.md)
-- [Neo backend](docs/neo.md)
-- [Neo Linux backend](docs/neo-linux.md)
-- [Pre-Neo backend](docs/pre-neo.md)
+- [Neo Windows patcher](docs/neo.md)
+- [Neo Linux patcher](docs/neo-linux.md)
+- [Pre-Neo Windows patcher](docs/pre-neo.md)

@@ -47,7 +47,7 @@ pacing and draw-time interpolation are changed.
 
 ## The patcher says the executable is unsupported
 
-This patcher is signature-based and targets a known Windows Steam build. If Steam updates the game or the file was modified, the SHA-256 hash can change.
+This patcher is signature-based and targets known Steam builds. If Steam updates the game or the file was modified, the SHA-256 hash can change.
 
 Recommended recovery:
 
@@ -55,7 +55,7 @@ Recommended recovery:
 2. Run `uv run superhexagon-fps-unlocker status`.
 3. If the file is still unsupported, open an issue with the executable size, SHA-256, and command output.
 
-Use `--force` only if you have confirmed the executable is layout-compatible with the supported build.
+Use `--force` only if you have confirmed the executable is layout-compatible with one of the supported builds.
 
 ## I want to remove the patch
 

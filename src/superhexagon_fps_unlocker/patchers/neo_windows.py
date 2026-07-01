@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Patch the Windows Steam build of Super Hexagon for higher FPS rendering.
+"""Patch the Neo Windows Steam build of Super Hexagon for higher FPS rendering.
 
 The patch keeps the fixed update loop at the original 60 FPS, paces rendering at
 higher FPS values, and interpolates selected visual state during draw calls. It
@@ -1593,7 +1593,7 @@ def patch_image(
     if not state.supported_signatures and not force and not migrated_from_legacy:
         raise PatchError(
             "unsupported executable hash/signatures. Re-run with --force only if this is "
-            "the Windows Steam build and you accept patching by byte signatures."
+            "the Neo Windows Steam build and you accept patching by byte signatures."
         )
 
     with_section, info, section, _labels = install_or_update_patch_section(
@@ -1658,7 +1658,7 @@ def original_image_for_backup(data: bytes, force: bool) -> bytes:
         if not state.supported_signatures and not force:
             raise PatchError(
                 "refusing to back up unsupported original executable. Re-run with --force only "
-                "if this is a layout-compatible Windows Steam build."
+                "if this is a layout-compatible Neo Windows Steam build."
             )
         return data
 
@@ -2112,7 +2112,7 @@ def format_diagnostic_result(result: DiagnosticResult) -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Patch Super Hexagon rendering to higher FPS values without speeding up gameplay."
+        description="Patch the Neo Windows Steam build for higher FPS rendering without speeding up gameplay."
     )
     parser.add_argument(
         "--path",

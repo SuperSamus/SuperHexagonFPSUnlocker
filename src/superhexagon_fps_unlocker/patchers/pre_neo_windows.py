@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Experimental FPS unlocker for the Pre-Neo Windows build of Super Hexagon.
+"""Experimental FPS unlocker for the Pre-Neo Windows Steam build of Super Hexagon.
 
-This is intentionally separate from the Neo patcher. The Pre-Neo executable is
-an older GLUT/openFrameworks build with a different timing loop.
+This is intentionally separate from the Neo Windows patcher. The Pre-Neo Windows
+Steam build is an older GLUT/openFrameworks build with a different timing loop.
 """
 
 from __future__ import annotations
@@ -1119,7 +1119,7 @@ def patch_image(
     if not state.supported_signatures and not force:
         raise PatchError(
             "unsupported executable hash/signatures. Re-run with --force only if this is "
-            "the matching Pre-Neo Windows build and you accept patching by byte signatures."
+            "the matching Pre-Neo Windows Steam build and you accept patching by byte signatures."
         )
 
     with_section, info, section = install_or_update_patch_section(
@@ -1171,7 +1171,7 @@ def original_image_for_backup(data: bytes, force: bool) -> bytes:
         if not state.supported_signatures and not force:
             raise PatchError(
                 "refusing to back up unsupported original executable. Re-run with --force only "
-                "if this is a layout-compatible Pre-Neo Windows build."
+                "if this is a layout-compatible Pre-Neo Windows Steam build."
             )
         return data
 
@@ -1495,7 +1495,7 @@ def format_diagnostic_result(result: DiagnosticResult) -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Patch the Pre-Neo Windows Super Hexagon build for higher FPS rendering.",
+        description="Patch the Pre-Neo Windows Steam build for higher FPS rendering.",
     )
     parser.add_argument(
         "--path",

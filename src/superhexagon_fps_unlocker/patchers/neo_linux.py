@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Patch the native Linux Steam build of Super Hexagon for higher FPS.
+"""Patch the Neo Linux Steam build of Super Hexagon for higher FPS.
 
-This backend targets the non-stripped ELF64 build currently shipped on Steam.
+This patcher targets the non-stripped ELF64 build currently shipped on Steam.
 It uses the game's own high-FPS timing path where possible: the render/update
 loop interval is raised and the game's expected frame delta is scaled to keep
 time-based gameplay code at the original speed.
@@ -381,7 +381,7 @@ def patch_image(data: bytes, refresh_hz: int, force: bool = False) -> tuple[byte
         if not state.supported_signatures and not force:
             raise PatchError(
                 "unsupported Linux executable hash/signatures. Re-run with --force only if this "
-                "is the native Linux Steam build and you accept patching by byte signatures."
+                "is the Neo Linux Steam build and you accept patching by byte signatures."
             )
         patched = bytearray(data)
     else:
@@ -415,7 +415,7 @@ def unpatch_image(data: bytes) -> tuple[bytes, ImageState, bool]:
         return data, state, False
     if state.status == "patched":
         raise PatchError(
-            "restore requires the .bak backup for the Linux backend because the patch reuses "
+            "restore requires the .bak backup for the Neo Linux patcher because the patch reuses "
             "part of the original setGameFrameRate function as code space"
         )
     raise PatchError(state.reason or f"cannot unpatch executable in state: {state.status}")
@@ -496,7 +496,7 @@ def require_existing_backup_file(exe_path: Path, force: bool) -> None:
     backup_path = backup_path_for(exe_path)
     if not backup_path.exists():
         raise PatchError(
-            "--no-backup is not supported for the Linux backend unless a valid .bak "
+            "--no-backup is not supported for the Neo Linux patcher unless a valid .bak "
             "already exists, because restore needs the original setGameFrameRate bytes"
         )
 
@@ -581,7 +581,7 @@ def diagnose_file(
     warmup_seconds: float,
     force: bool,
 ) -> DiagnosticResult:
-    raise PatchError("runtime diagnostics are not implemented for the native Linux backend yet")
+    raise PatchError("runtime diagnostics are not implemented for the Neo Linux patcher yet")
 
 
 def format_state(state: ImageState) -> str:

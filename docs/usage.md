@@ -67,25 +67,25 @@ name.
 If the stable `.bak` belongs to a different build, the patcher replaces it with
 an original executable for the currently detected build.
 
-The native Linux backend needs a valid `.bak` to restore because it reuses part
+The Neo Linux patcher needs a valid `.bak` to restore because it reuses part
 of the original executable as patch space. `--no-backup` is accepted there only
 when a valid `SuperHexagon.bak` already exists.
 
-## Current Backends
+## Current Patchers
 
-Current patch backends target these Steam executables:
+Current patchers target these Steam builds:
 
-- Neo build: `SuperHexagon.exe`
-- Pre-Neo build: `superhexagon.exe`
-- Neo Linux build: `SuperHexagon`
+- Neo Windows Steam build: `SuperHexagon.exe`
+- Neo Linux Steam build: `SuperHexagon`
+- Pre-Neo Windows Steam build: `superhexagon.exe`
 
-The native Linux backend is signature-based and currently targets the known
-Steam ELF64 build.
+The Neo Linux patcher is signature-based and currently targets the known Steam
+ELF64 build.
 
 Unknown builds are refused by default. Use `--force` only when you know the byte
 signatures match.
 
-Runtime diagnostics are currently implemented for the Windows backends only.
+Runtime diagnostics are currently implemented for the Windows patchers only.
 
 ## How It Works
 
@@ -93,4 +93,4 @@ The patch keeps gameplay simulation on the original fixed cadence and runs
 rendering at a higher cadence. Visual state is interpolated during draw so the
 game does not simply run faster.
 
-Neo and Pre-Neo are different binaries, so they use separate patch backends.
+Neo and Pre-Neo are different binaries, so they use separate patchers.

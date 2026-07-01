@@ -1,2 +1,1 @@
-"""Binary patch backends for supported Super Hexagon builds."""
-
+"""Binary patchers for supported Super Hexagon builds."""

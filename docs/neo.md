@@ -1,6 +1,6 @@
-# Neo Backend
+# Neo Windows Patcher
 
-The Neo backend targets the modern Windows Steam executable:
+The Neo Windows patcher targets the Neo Windows Steam build:
 
 ```text
 File: SuperHexagon.exe
