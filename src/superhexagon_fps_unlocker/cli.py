@@ -13,11 +13,11 @@ from .patchers import neo_linux, neo_windows, pre_neo_windows
 PRESET_REFRESH_CHOICES = (120, 240, 360, 480)
 MIN_PATCH_REFRESH_HZ = 120
 REFRESH_HZ_STEP = 60
-BUILD_CHOICES = ("auto", "neo", "neo-linux", "pre-neo")
+BUILD_CHOICES = ("auto", "neo-windows", "neo-linux", "pre-neo-windows")
 BUILD_HELP = (
     "Force a build patcher instead of auto-detecting. "
-    "Use neo for the Neo Windows Steam build, neo-linux for the Neo Linux Steam build, "
-    "or pre-neo for the Pre-Neo Windows Steam build. Default: auto."
+    "Use neo-windows for the Neo Windows Steam build, neo-linux for the Neo Linux Steam build, "
+    "or pre-neo-windows for the Pre-Neo Windows Steam build. Default: auto."
 )
 
 GOOD_STATES = {"original", "patched", "diagnostic"}
@@ -50,9 +50,9 @@ class Detection:
 
 
 PATCHERS = {
-    "neo": Patcher("neo", "Neo Windows Steam build", neo_windows),
+    "neo-windows": Patcher("neo-windows", "Neo Windows Steam build", neo_windows),
     "neo-linux": Patcher("neo-linux", "Neo Linux Steam build", neo_linux),
-    "pre-neo": Patcher("pre-neo", "Pre-Neo Windows Steam build", pre_neo_windows),
+    "pre-neo-windows": Patcher("pre-neo-windows", "Pre-Neo Windows Steam build", pre_neo_windows),
 }
 
 
@@ -62,7 +62,7 @@ def state_score(patcher: Patcher, state: object) -> int:
 
     if status in GOOD_STATES:
         return 100 if supported else 80
-    if patcher.key == "neo" and status in NEO_LEGACY_STATES:
+    if patcher.key == "neo-windows" and status in NEO_LEGACY_STATES:
         return 70
     if status == "conflict":
         return 50

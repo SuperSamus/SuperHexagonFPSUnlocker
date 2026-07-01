@@ -34,6 +34,6 @@ The patcher supports the Neo Windows, Neo Linux, and Pre-Neo Windows Steam build
 
 - [Usage](docs/usage.md)
 - [Troubleshooting](docs/troubleshooting.md)
-- [Neo Windows patcher](docs/neo.md)
+- [Neo Windows patcher](docs/neo-windows.md)
 - [Neo Linux patcher](docs/neo-linux.md)
-- [Pre-Neo Windows patcher](docs/pre-neo.md)
+- [Pre-Neo Windows patcher](docs/pre-neo-windows.md)
