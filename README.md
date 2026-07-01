@@ -1,6 +1,6 @@
 # SuperHexagonFPSUnlocker
 
-FPS Unlocker for Super Hexagon on Steam.
+FPS Unlocker for Super Hexagon, supporting Windows and Linux builds. Compatible with Steam Deck OLED!
 
 ## Usage
 
