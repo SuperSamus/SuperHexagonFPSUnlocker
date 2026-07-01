@@ -34,9 +34,9 @@ Custom FPS values must be multiples of `60` and at least `120`.
 
 Close the game before patching or restoring.
 
-If you patch the game to `120 FPS` but your display is running at `90 Hz`, VSync will make the game run at `90 FPS` without issues. Disable VSync only if you want to force the patched FPS value.
+For example, if you patch the game to `120 FPS` but your display is running at `90 Hz`, VSync will make the game run at `90 FPS` without issues. Disable VSync only if you want to force the patched FPS value.
 
-A `.bak` backup is created or refreshed next to the executable.
+When you patch the game, a `.bak` backup is created or refreshed next to the executable.
 
 Supported Steam builds are Neo Windows, Neo Linux, and Pre-Neo Windows.
 
