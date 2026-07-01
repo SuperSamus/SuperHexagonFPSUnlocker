@@ -8,7 +8,7 @@ After a lot of testing, and with some help from Codex using GPT-5.5, I managed t
 
 The Linux port ended up being pretty straightforward thanks to the info in the [Super Hexagon Neo post](https://superhexagon.com/neo/): since Neo, the desktop versions share the same system-level code across Windows, Linux, and macOS, so the Windows and Linux builds behaved close enough for the patching work to carry over nicely.
 
-I then made a simple Python script to make the patch easy to apply on both Windows and Steam Deck. The Steam Deck OLED looks really good at 90 Hz.
+I then made a simple Python script to make the patch easy to apply on both Windows and the Steam Deck OLED, at 90 FPS!
 
 ## Usage
 
